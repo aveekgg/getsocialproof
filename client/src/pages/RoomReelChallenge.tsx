@@ -72,13 +72,17 @@ export default function RoomReelChallenge() {
     setSubmissionId(null);
   };
 
-  // Prevent body scroll on mobile
+  // Allow scrolling except on camera screen
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    if (currentScreen === 'camera') {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, []);
+  }, [currentScreen]);
 
   const commonProps = {
     onBack: () => {

@@ -8,7 +8,7 @@ interface ChallengeSetupProps {
 
 export default function ChallengeSetup({ challenge, onStartChallenge, onBack }: ChallengeSetupProps) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-y-auto">
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-white">
         <div className="flex items-center justify-between mb-4">
           <button 
@@ -28,7 +28,7 @@ export default function ChallengeSetup({ challenge, onStartChallenge, onBack }: 
         </div>
       </div>
       
-      <div className="p-6">
+      <div className="p-6 pb-safe">
         <div className="space-y-4 mb-8">
           {challenge.steps.map((step, index) => (
             <div key={step.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
