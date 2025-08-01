@@ -19,7 +19,7 @@ export default function RoomReelChallenge() {
   const [totalPoints, setTotalPoints] = useState(0);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
 
-  const { data: challenges = [] } = useQuery({
+  const { data: challenges = [] } = useQuery<Challenge[]>({
     queryKey: ['/api/challenges'],
   });
 
