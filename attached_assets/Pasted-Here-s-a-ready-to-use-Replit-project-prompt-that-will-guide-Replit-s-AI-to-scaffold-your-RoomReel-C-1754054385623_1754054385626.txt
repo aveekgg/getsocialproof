@@ -1,0 +1,104 @@
+Here’s a ready-to-use Replit project prompt that will guide Replit’s AI to scaffold your “RoomReel Challenge” web app. This version sets up the core features: camera overlay, guided prompts, gamified UI, and video upload — in a React + WebRTC environment.
+
+
+---
+
+🧾 Replit Prompt (Copy-Paste into Replit’s AI or “Start with AI”)
+
+> Build a mobile-first React web app called "RoomReel Challenge" to let students record short guided videos about their student housing experience.
+
+🎯 Core Features:
+
+1. Fullscreen mobile camera interface using WebRTC
+
+
+2. Overlay real-time prompts (like “Show us your fridge!”) as animated UI
+
+
+3. Progress timeline showing 3-5 steps/scenes
+
+
+4. Record 4-6 second video clips per prompt
+
+
+5. After completing all clips, auto-stitch preview of the final video
+
+
+6. Submit button to upload the final video (use Firebase or just simulate upload)
+
+
+7. Spin-the-Wheel reward animation after submission (dummy rewards: Starbucks voucher, Netflix plan, etc.)
+
+
+
+🎨 UI/UX Notes:
+
+Use TailwindCSS or styled-components for clean mobile UI
+
+Overlay UI should include a prompt box with emoji, countdown timer before each clip starts
+
+Show “🎁 You unlocked 10 perk points!” after each clip finishes
+
+Simulate wheel spin with animation (use CSS or canvas)
+
+
+🛠️ Stack:
+
+React
+
+WebRTC for camera
+
+Simple in-memory state (no backend for now)
+
+Add recordrtc or native MediaRecorder for capturing short video snippets
+
+Use ffmpeg.wasm (optional) or just list all clips in preview for now
+
+
+📱 Extra Credit (Optional):
+
+Add a leaderboard page (dummy data)
+
+Let users choose “Show your room in 5 clips” or “Day in Life” as recording challenges
+
+Add animated popups after each step (e.g., confetti)
+
+
+📂 File structure suggestion:
+
+/components/CameraView.jsx
+
+/components/OverlayPrompt.jsx
+
+/components/ProgressTimeline.jsx
+
+/components/SpinWheel.jsx
+
+/App.jsx, /styles.css
+
+
+
+
+
+---
+
+🧑‍💻 Next Steps After Replit Generates
+
+1. Test the camera overlay interface (on mobile browser or dev tools).
+
+
+2. Replace dummy prompts with your real ones (from the examples you wrote).
+
+
+3. Connect upload and reward logic to your backend (Firebase/Supabase).
+
+
+4. Add QR code distribution or embed on property websites.
+
+
+
+
+---
+
+If you want, I can generate the actual App.jsx starter code and component stubs too — just say "Generate starter code".
+
