@@ -5,6 +5,8 @@ RoomReel Challenge is a mobile-first React web application that allows students 
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
+Target audience: UK university students aged 18-26 (undergrad/postgrad).
+Content tone: Authentic, relatable, using British English and student-friendly language.
 
 # System Architecture
 
@@ -75,6 +77,8 @@ Preferred communication style: Simple, everyday language.
 - **Native WebRTC**: Browser-based camera and microphone access
 - **MediaRecorder API**: Built-in browser video recording capabilities
 - **No External Video Processing**: Relies on browser capabilities for media handling
+- **Video Storage**: Currently videos are recorded in-browser but not stored on backend - only metadata is saved
+- **Future Enhancement**: Video storage would require file upload system and cloud storage integration
 
 ## Form and Data Handling
 - **React Hook Form**: Form state management and validation

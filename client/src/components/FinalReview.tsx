@@ -52,7 +52,7 @@ export default function FinalReview({ challenge, completedClips, totalPoints, on
     <div className="min-h-screen bg-white">
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-white">
         <h2 className="text-2xl font-bold mb-2">🎬 Your RoomReel</h2>
-        <p className="opacity-90">Review your amazing {challenge.name.toLowerCase()}!</p>
+        <p className="opacity-90">Looking good! Ready to share your {challenge.name.toLowerCase()}?</p>
       </div>
       
       <div className="p-6">

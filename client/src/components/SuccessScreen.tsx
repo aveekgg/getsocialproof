@@ -26,8 +26,8 @@ export default function SuccessScreen({
           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 mx-auto shadow-2xl">
             <span className="text-4xl">🏆</span>
           </div>
-          <h1 className="text-4xl font-bold mb-4">Challenge Complete!</h1>
-          <p className="text-lg opacity-90 mb-8 max-w-sm">Thanks for sharing your awesome room! Your RoomReel is now live and helping other students.</p>
+          <h1 className="text-4xl font-bold mb-4">Absolute Legend!</h1>
+          <p className="text-lg opacity-90 mb-8 max-w-sm">Cheers for sharing your space! Your RoomReel is helping fellow students find their perfect home.</p>
         </div>
         
         {/* Final Stats */}

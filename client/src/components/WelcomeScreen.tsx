@@ -20,8 +20,8 @@ export default function WelcomeScreen({ challenges, onChallengeSelect }: Welcome
           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 mx-auto shadow-2xl">
             <span className="text-4xl">🎬</span>
           </div>
-          <h1 className="text-4xl font-bold mb-4">RoomReel Challenge</h1>
-          <p className="text-lg opacity-90 mb-8 max-w-sm">Create awesome videos about your student housing experience and win amazing rewards!</p>
+          <h1 className="text-4xl font-bold mb-4">RoomReel</h1>
+          <p className="text-lg opacity-90 mb-8 max-w-sm">Share your real uni life, help other students, and win some brilliant rewards!</p>
         </div>
         
         <div className="w-full max-w-sm space-y-4 animate-fade-in-up">
@@ -36,7 +36,7 @@ export default function WelcomeScreen({ challenges, onChallengeSelect }: Welcome
                   : 'bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30'
               }`}
             >
-              {challenge.id === 'room-tour' ? '🏠' : '📅'} {challenge.name}
+              {challenge.id === 'room-tour' ? '🏠' : '📱'} {challenge.name}
             </button>
           ))}
         </div>

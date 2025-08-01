@@ -36,14 +36,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Generate random reward
       const rewards = [
-        { type: "gift-card", value: "$5 Starbucks Gift Card" },
-        { type: "subscription", value: "Spotify Premium Month" },
-        { type: "voucher", value: "$10 Pizza Voucher" },
-        { type: "subscription", value: "Netflix Month Free" },
-        { type: "credit", value: "$15 Amazon Credit" },
-        { type: "bundle", value: "Study Guide Bundle" },
-        { type: "cash", value: "$20 Cash Prize" },
-        { type: "mystery", value: "Mystery Box" }
+        { type: "gift-card", value: "£5 Costa Coffee Card" },
+        { type: "subscription", value: "Spotify Premium (3 Months)" },
+        { type: "voucher", value: "£10 Domino's Voucher" },
+        { type: "subscription", value: "Netflix (1 Month)" },
+        { type: "credit", value: "£15 Amazon Voucher" },
+        { type: "bundle", value: "Study Essentials Kit" },
+        { type: "cash", value: "£20 PayPal Credit" },
+        { type: "mystery", value: "Surprise Student Bundle" }
       ];
       
       const randomReward = rewards[Math.floor(Math.random() * rewards.length)];

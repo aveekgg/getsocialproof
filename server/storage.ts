@@ -35,25 +35,25 @@ export class MemStorage implements IStorage {
 
   private initializeChallenges() {
     const roomTourSteps: ChallengeStep[] = [
-      { id: 1, title: "Show us your bed area", description: "Pan around your sleeping space", emoji: "🛏️", duration: 5 },
-      { id: 2, title: "Your study/work space", description: "Show your desk setup", emoji: "📚", duration: 5 },
-      { id: 3, title: "Kitchen/food area", description: "Open the fridge, show cooking space", emoji: "🍕", duration: 6 },
-      { id: 4, title: "Bathroom facilities", description: "Quick tour of your bathroom", emoji: "🚿", duration: 4 },
-      { id: 5, title: "Your favorite spot", description: "Show us where you love to hang out", emoji: "🌟", duration: 5 }
+      { id: 1, title: "Your bedroom vibe", description: "Give us the full tour of where you sleep and chill", emoji: "🛏️", duration: 6 },
+      { id: 2, title: "Study setup reveal", description: "Show off your workspace - messy or clean, we love it all", emoji: "💻", duration: 5 },
+      { id: 3, title: "Kitchen chaos", description: "What's in your fridge? Cooking space? The real uni life", emoji: "🍜", duration: 6 },
+      { id: 4, title: "The essentials", description: "Quick bathroom tour - keeping it real", emoji: "🚿", duration: 4 },
+      { id: 5, title: "Your happy place", description: "That one spot where you actually feel at home", emoji: "✨", duration: 5 }
     ];
 
     const dayInLifeSteps: ChallengeStep[] = [
-      { id: 1, title: "Morning routine", description: "Show us how you start your day", emoji: "🌅", duration: 6 },
-      { id: 2, title: "Study session", description: "Capture yourself studying or in class", emoji: "📖", duration: 5 },
-      { id: 3, title: "Meal time", description: "Show us what and where you eat", emoji: "🍽️", duration: 5 },
-      { id: 4, title: "Social time", description: "Hanging out with friends or activities", emoji: "👥", duration: 6 },
-      { id: 5, title: "Evening wind-down", description: "How you relax and end your day", emoji: "🌙", duration: 5 }
+      { id: 1, title: "Morning reality check", description: "How do you actually start your day? Coffee first?", emoji: "☕", duration: 6 },
+      { id: 2, title: "Uni grind", description: "Lecture halls, library sessions, or cramming at home", emoji: "📚", duration: 5 },
+      { id: 3, title: "Food situation", description: "Meal deal? Cooking? Takeaway? Show us the real deal", emoji: "🥪", duration: 5 },
+      { id: 4, title: "Social moments", description: "Hanging with mates, society events, or just good vibes", emoji: "👯", duration: 6 },
+      { id: 5, title: "Night mode", description: "How you unwind - Netflix, gaming, or early bedtime?", emoji: "🌙", duration: 5 }
     ];
 
     const roomTourChallenge: Challenge = {
       id: "room-tour",
-      name: "Show Your Room in 5 Clips",
-      description: "Create awesome videos about your student housing experience and win amazing rewards!",
+      name: "Room Tour Challenge",
+      description: "Give us the honest tour of your uni accommodation and win some proper rewards!",
       steps: roomTourSteps,
       pointsPerStep: 25,
       createdAt: new Date()
@@ -61,8 +61,8 @@ export class MemStorage implements IStorage {
 
     const dayInLifeChallenge: Challenge = {
       id: "day-in-life",
-      name: "Day in Life Challenge",
-      description: "Document a typical day in your student life with 5 engaging clips!",
+      name: "A Day in My Uni Life",
+      description: "Show us what a real day looks like as a UK student - the good, bad, and caffeinated!",
       steps: dayInLifeSteps,
       pointsPerStep: 25,
       createdAt: new Date()

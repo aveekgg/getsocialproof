@@ -52,10 +52,10 @@ export default function ChallengeSetup({ challenge, onStartChallenge, onBack }: 
             <span className="font-semibold text-accent">Pro Tips</span>
           </div>
           <ul className="text-sm text-gray-700 space-y-1">
-            <li>• Keep your phone steady</li>
-            <li>• Make sure there's good lighting</li>
-            <li>• Speak clearly about what you're showing</li>
-            <li>• Have fun and be yourself!</li>
+            <li>• Hold your phone steady (or prop it up)</li>
+            <li>• Natural lighting works best</li>
+            <li>• Be yourself - authenticity wins</li>
+            <li>• Don't worry about being perfect!</li>
           </ul>
         </div>
         
@@ -64,7 +64,7 @@ export default function ChallengeSetup({ challenge, onStartChallenge, onBack }: 
           data-testid="button-start-recording"
           className="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse-glow"
         >
-          🎬 Start Recording
+          🎬 Let's Go!
         </button>
       </div>
     </div>
