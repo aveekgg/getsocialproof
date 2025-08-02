@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomReel Challenge - Student Housing Video Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#6366F1',
+                        secondary: '#EC4899',
+                        accent: '#10B981',
+                        dark: '#111827',
+                    },
+                    animation: {
+                        'spin-slow': 'spin 3s linear infinite',
+                        'bounce-in': 'bounceIn 0.5s ease-out',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out',
+                        'confetti': 'confetti 0.8s ease-out',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        bounceIn: {
+                            '0%': { transform: 'scale(0.3)', opacity: '0' },
+                            '50%': { transform: 'scale(1.05)' },
+                            '70%': { transform: 'scale(0.9)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        fadeInUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        confetti: {
+                            '0%': { transform: 'translateY(0) rotate(0deg)', opacity: '1' },
+                            '100%': { transform: 'translateY(-100vh) rotate(720deg)', opacity: '0' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(99, 102, 241, 0.5)' },
+                            '50%': { boxShadow: '0 0 40px rgba(99, 102, 241, 0.8)' },
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="font-sans bg-gray-50 overflow-x-hidden">
+    
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="min-h-screen bg-gradient-to-br from-primary to-secondary relative overflow-hidden">
+        <!-- Decorative background elements -->
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 left-10 w-20 h-20 bg-white rounded-full animate-bounce"></div>
+            <div class="absolute top-40 right-16 w-16 h-16 bg-white rounded-full animate-bounce" style="animation-delay: 0.5s;"></div>
+            <div class="absolute bottom-32 left-20 w-12 h-12 bg-white rounded-full animate-bounce" style="animation-delay: 1s;"></div>
+        </div>
+        
+        <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center text-white">
+            <div class="animate-bounce-in mb-8">
+                <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 mx-auto shadow-2xl">
+                    <span class="text-4xl">🎬</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-4">RoomReel Challenge</h1>
+                <p class="text-lg opacity-90 mb-8 max-w-sm">Create awesome videos about your student housing experience and win amazing rewards!</p>
+            </div>
+            
+            <div class="w-full max-w-sm space-y-4 animate-fade-in-up">
+                <button onclick="selectChallenge('room-tour')" class="w-full bg-white text-primary py-4 px-6 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    🏠 Show Your Room in 5 Clips
+                </button>
+                <button onclick="selectChallenge('day-in-life')" class="w-full bg-white/20 backdrop-blur-sm text-white py-4 px-6 rounded-2xl font-semibold text-lg border-2 border-white/30 hover:bg-white/30 transform hover:scale-105 transition-all duration-300">
+                    📅 Day in Life Challenge
+                </button>
+            </div>
+            
+            <div class="mt-12 flex items-center space-x-4 opacity-80">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">⚡</span>
+                    <span class="text-sm">Quick & Fun</span>
+                </div>
+                <div class="w-1 h-1 bg-white rounded-full"></div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🎁</span>
+                    <span class="text-sm">Win Rewards</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Setup Screen -->
+    <div id="challenge-setup" class="min-h-screen bg-white hidden">
+        <div class="bg-gradient-to-r from-primary to-secondary p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+                <button onclick="showScreen('welcome-screen')" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <span class="text-xl">←</span>
+                </button>
+                <h2 class="text-xl font-semibold">Room Tour Challenge</h2>
+                <div class="w-10 h-10"></div>
+            </div>
+            
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-6">
+                <h3 class="font-semibold mb-2">📋 Your Mission:</h3>
+                <p class="text-sm opacity-90">Record 5 short clips showing different areas of your room. Each clip should be 4-6 seconds long.</p>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <div class="space-y-4 mb-8">
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">1</div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold">🛏️ Show us your bed area</h4>
+                        <p class="text-sm text-gray-600">Pan around your sleeping space</p>
+                    </div>
+                    <span class="text-2xl">📹</span>
+                </div>
+                
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-semibold">2</div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold">📚 Your study/work space</h4>
+                        <p class="text-sm text-gray-600">Show your desk setup</p>
+                    </div>
+                    <span class="text-2xl opacity-30">📹</span>
+                </div>
+                
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-semibold">3</div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold">🍕 Kitchen/food area</h4>
+                        <p class="text-sm text-gray-600">Open the fridge, show cooking space</p>
+                    </div>
+                    <span class="text-2xl opacity-30">📹</span>
+                </div>
+                
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-semibold">4</div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold">🚿 Bathroom facilities</h4>
+                        <p class="text-sm text-gray-600">Quick tour of your bathroom</p>
+                    </div>
+                    <span class="text-2xl opacity-30">📹</span>
+                </div>
+                
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-semibold">5</div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold">🌟 Your favorite spot</h4>
+                        <p class="text-sm text-gray-600">Show us where you love to hang out</p>
+                    </div>
+                    <span class="text-2xl opacity-30">📹</span>
+                </div>
+            </div>
+            
+            <div class="bg-accent/10 border border-accent/30 rounded-xl p-4 mb-8">
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="text-xl">💡</span>
+                    <span class="font-semibold text-accent">Pro Tips</span>
+                </div>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• Keep your phone steady</li>
+                    <li>• Make sure there's good lighting</li>
+                    <li>• Speak clearly about what you're showing</li>
+                    <li>• Have fun and be yourself!</li>
+                </ul>
+            </div>
+            
+            <button onclick="startChallenge()" class="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse-glow">
+                🎬 Start Recording
+            </button>
+        </div>
+    </div>
+
+    <!-- Camera Interface -->
+    <div id="camera-interface" class="min-h-screen bg-dark relative hidden">
+        <!-- Camera Feed Placeholder -->
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900">
+            <!-- Simulated camera feed with a placeholder image -->
+            <!-- A modern dorm room with a bed, desk, and window showing natural lighting -->
+            <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=800" 
+                 alt="Camera feed placeholder" 
+                 class="w-full h-full object-cover opacity-60" />
+            
+            <!-- Camera grid overlay -->
+            <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 opacity-20">
+                <div class="border-r border-b border-white/30"></div>
+                <div class="border-r border-b border-white/30"></div>
+                <div class="border-b border-white/30"></div>
+                <div class="border-r border-b border-white/30"></div>
+                <div class="border-r border-b border-white/30"></div>
+                <div class="border-b border-white/30"></div>
+                <div class="border-r border-white/30"></div>
+                <div class="border-r border-white/30"></div>
+                <div></div>
+            </div>
+        </div>
+        
+        <!-- Top Overlay -->
+        <div class="absolute top-0 left-0 right-0 z-20 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <button onclick="showScreen('challenge-setup')" class="w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white">
+                    <span class="text-xl">×</span>
+                </button>
+                <div class="flex items-center space-x-2 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2">
+                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span class="text-white text-sm font-medium">REC</span>
+                </div>
+                <button class="w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white">
+                    <span class="text-xl">🔄</span>
+                </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="bg-black/30 backdrop-blur-sm rounded-full p-1 mb-4">
+                <div class="flex space-x-1">
+                    <div class="flex-1 h-2 bg-primary rounded-full"></div>
+                    <div class="flex-1 h-2 bg-white/30 rounded-full"></div>
+                    <div class="flex-1 h-2 bg-white/30 rounded-full"></div>
+                    <div class="flex-1 h-2 bg-white/30 rounded-full"></div>
+                    <div class="flex-1 h-2 bg-white/30 rounded-full"></div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between text-white text-sm">
+                <span>Step 1 of 5</span>
+                <span>⚡ 25 Points</span>
+            </div>
+        </div>
+        
+        <!-- Center Overlay - Prompt -->
+        <div class="absolute inset-0 flex items-center justify-center z-20 px-6">
+            <div class="bg-gradient-to-r from-primary to-secondary rounded-3xl p-6 text-white text-center shadow-2xl animate-bounce-in max-w-sm">
+                <div class="text-4xl mb-3">🛏️</div>
+                <h3 class="text-xl font-bold mb-2">Show us your bed area!</h3>
+                <p class="text-sm opacity-90 mb-4">Pan around your sleeping space and tell us what you love about it</p>
+                <div class="bg-white/20 backdrop-blur-sm rounded-full py-2 px-4 inline-block">
+                    <span class="font-semibold">4-6 seconds</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Controls -->
+        <div class="absolute bottom-0 left-0 right-0 z-20 p-6 pb-8">
+            <div class="flex items-center justify-center space-x-8">
+                <button class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-2xl">
+                    📸
+                </button>
+                
+                <!-- Record Button -->
+                <button onclick="startRecording()" id="record-btn" class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center shadow-2xl relative animate-pulse-glow">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                        <div class="w-6 h-6 bg-red-500 rounded-full"></div>
+                    </div>
+                </button>
+                
+                <button class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-2xl">
+                    💡
+                </button>
+            </div>
+            
+            <!-- Timer Display -->
+            <div class="text-center mt-4">
+                <div id="recording-timer" class="text-white text-lg font-bold hidden">
+                    <span class="bg-red-500 px-3 py-1 rounded-full">0:05</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Countdown Overlay -->
+        <div id="countdown-overlay" class="absolute inset-0 bg-black/80 flex items-center justify-center z-30 hidden">
+            <div class="text-white text-center">
+                <div id="countdown-number" class="text-8xl font-bold mb-4 animate-bounce-in">3</div>
+                <p class="text-xl">Get ready to record!</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recording Complete Screen -->
+    <div id="recording-complete" class="min-h-screen bg-white hidden">
+        <div class="p-6">
+            <!-- Success Animation -->
+            <div class="text-center py-12">
+                <div class="w-24 h-24 bg-accent rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-in">
+                    <span class="text-4xl text-white">✓</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Great job! 🎉</h2>
+                <p class="text-gray-600 mb-6">You've completed your first clip</p>
+                
+                <!-- Points Earned -->
+                <div class="bg-gradient-to-r from-accent to-green-400 text-white rounded-2xl p-4 mb-6 animate-bounce-in">
+                    <div class="text-3xl mb-2">🎁</div>
+                    <div class="text-xl font-bold">+25 Perk Points!</div>
+                    <div class="text-sm opacity-90">Total: 25 points</div>
+                </div>
+            </div>
+            
+            <!-- Video Preview -->
+            <div class="bg-gray-100 rounded-2xl p-4 mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold">Your Clip Preview</h3>
+                    <span class="text-sm text-gray-500">5.2s</span>
+                </div>
+                <div class="bg-gray-300 rounded-xl h-32 flex items-center justify-center mb-3">
+                    <span class="text-4xl">🎬</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium">
+                        🔄 Retake
+                    </button>
+                    <button class="flex-1 bg-primary text-white py-2 px-4 rounded-lg text-sm font-medium">
+                        ✓ Keep This
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Next Step -->
+            <div class="space-y-4">
+                <div class="bg-primary/10 border border-primary/30 rounded-xl p-4">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold text-sm">2</div>
+                        <span class="font-semibold">Next: Your study/work space</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Show your desk setup 📚</p>
+                </div>
+                
+                <button onclick="continueToNextClip()" class="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg">
+                    Continue Recording →
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Final Review Screen -->
+    <div id="final-review" class="min-h-screen bg-white hidden">
+        <div class="bg-gradient-to-r from-primary to-secondary p-6 text-white">
+            <h2 class="text-2xl font-bold mb-2">🎬 Your RoomReel</h2>
+            <p class="opacity-90">Review your amazing room tour!</p>
+        </div>
+        
+        <div class="p-6">
+            <!-- Video Preview -->
+            <div class="bg-gray-900 rounded-2xl overflow-hidden mb-6">
+                <!-- A student dorm room video preview thumbnail showing multiple room angles -->
+                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" 
+                     alt="Room tour video preview" 
+                     class="w-full h-48 object-cover" />
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-white font-semibold">Room Tour Final Video</span>
+                        <span class="text-gray-400 text-sm">25.6s</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">
+                            ▶️
+                        </button>
+                        <div class="flex-1 bg-gray-700 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full w-0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Clip Summary -->
+            <div class="space-y-3 mb-6">
+                <h3 class="font-semibold mb-3">📋 Your Clips</h3>
+                
+                <div class="flex items-center space-x-3 p-3 bg-accent/10 rounded-xl">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm">✓</div>
+                    <div class="flex-1">
+                        <div class="font-medium">🛏️ Bed area</div>
+                        <div class="text-sm text-gray-600">5.2s</div>
+                    </div>
+                    <span class="text-accent text-sm">+25pts</span>
+                </div>
+                
+                <div class="flex items-center space-x-3 p-3 bg-accent/10 rounded-xl">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm">✓</div>
+                    <div class="flex-1">
+                        <div class="font-medium">📚 Study space</div>
+                        <div class="text-sm text-gray-600">4.8s</div>
+                    </div>
+                    <span class="text-accent text-sm">+25pts</span>
+                </div>
+                
+                <div class="flex items-center space-x-3 p-3 bg-accent/10 rounded-xl">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm">✓</div>
+                    <div class="flex-1">
+                        <div class="font-medium">🍕 Kitchen area</div>
+                        <div class="text-sm text-gray-600">6.1s</div>
+                    </div>
+                    <span class="text-accent text-sm">+25pts</span>
+                </div>
+                
+                <div class="flex items-center space-x-3 p-3 bg-accent/10 rounded-xl">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm">✓</div>
+                    <div class="flex-1">
+                        <div class="font-medium">🚿 Bathroom</div>
+                        <div class="text-sm text-gray-600">4.5s</div>
+                    </div>
+                    <span class="text-accent text-sm">+25pts</span>
+                </div>
+                
+                <div class="flex items-center space-x-3 p-3 bg-accent/10 rounded-xl">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm">✓</div>
+                    <div class="flex-1">
+                        <div class="font-medium">🌟 Favorite spot</div>
+                        <div class="text-sm text-gray-600">5.8s</div>
+                    </div>
+                    <span class="text-accent text-sm">+25pts</span>
+                </div>
+            </div>
+            
+            <!-- Total Points -->
+            <div class="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl p-4 mb-6 text-center">
+                <div class="text-3xl mb-2">🏆</div>
+                <div class="text-2xl font-bold">125 Perk Points Earned!</div>
+                <div class="text-sm opacity-90">You're on fire! 🔥</div>
+            </div>
+            
+            <button onclick="submitVideo()" class="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                🚀 Submit My RoomReel
+            </button>
+        </div>
+    </div>
+    
+    <!-- Reward Wheel Screen -->
+    <div id="reward-wheel" class="min-h-screen bg-gradient-to-br from-secondary to-primary relative overflow-hidden hidden">
+        <!-- Confetti Animation -->
+        <div class="absolute inset-0 pointer-events-none z-10">
+            <div class="confetti-piece absolute animate-confetti" style="left: 10%; animation-delay: 0s;">🎉</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 20%; animation-delay: 0.2s;">⭐</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 30%; animation-delay: 0.4s;">🎊</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 40%; animation-delay: 0.6s;">💫</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 50%; animation-delay: 0.8s;">🎉</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 60%; animation-delay: 1s;">⭐</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 70%; animation-delay: 1.2s;">🎊</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 80%; animation-delay: 1.4s;">💫</div>
+            <div class="confetti-piece absolute animate-confetti" style="left: 90%; animation-delay: 1.6s;">🎉</div>
+        </div>
+        
+        <div class="relative z-20 flex flex-col items-center justify-center min-h-screen px-6 text-center text-white">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold mb-4 animate-bounce-in">🎉 Congratulations!</h1>
+                <p class="text-lg opacity-90 mb-8">Your RoomReel has been submitted! Time for your reward...</p>
+            </div>
+            
+            <!-- Spinning Wheel -->
+            <div class="relative mb-8">
+                <div id="spin-wheel" class="w-80 h-80 rounded-full relative overflow-hidden shadow-2xl">
+                    <!-- Wheel Sections -->
+                    <div class="absolute inset-0 rounded-full overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-red-500 to-red-600" style="clip-path: polygon(50% 50%, 50% 0%, 75% 25%);"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600" style="clip-path: polygon(50% 50%, 75% 25%, 100% 50%);"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-green-600" style="clip-path: polygon(50% 50%, 100% 50%, 75% 75%);"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-500 to-yellow-600" style="clip-path: polygon(50% 50%, 75% 75%, 50% 100%);"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-purple-600" style="clip-path: polygon(50% 50%, 50% 100%, 25% 75%);"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-pink-500 to-pink-600" style="clip-path: polygon(50% 50%, 25% 75%, 0% 50%);"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-600" style="clip-path: polygon(50% 50%, 0% 50%, 25% 25%);"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-orange-500 to-orange-600" style="clip-path: polygon(50% 50%, 25% 25%, 50% 0%);"></div>
+                    </div>
+                    
+                    <!-- Wheel Labels -->
+                    <div class="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">
+                        <div class="absolute" style="top: 10%; left: 50%; transform: translateX(-50%);">☕</div>
+                        <div class="absolute" style="top: 25%; right: 15%;">🎵</div>
+                        <div class="absolute" style="bottom: 25%; right: 15%;">🍕</div>
+                        <div class="absolute" style="bottom: 10%; left: 50%; transform: translateX(-50%);">🎬</div>
+                        <div class="absolute" style="bottom: 25%; left: 15%;">🛍️</div>
+                        <div class="absolute" style="top: 25%; left: 15%;">📚</div>
+                        <div class="absolute" style="top: 50%; left: 10%;">💰</div>
+                        <div class="absolute" style="top: 50%; right: 10%;">🎁</div>
+                    </div>
+                    
+                    <!-- Center Circle -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-16 h-16 bg-white rounded-full shadow-2xl flex items-center justify-center">
+                            <span class="text-2xl">🎯</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pointer -->
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2">
+                    <div class="w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
+                </div>
+            </div>
+            
+            <button onclick="spinWheel()" id="spin-btn" class="bg-white text-secondary py-4 px-8 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 animate-pulse-glow">
+                🎯 SPIN THE WHEEL!
+            </button>
+            
+            <!-- Reward Result -->
+            <div id="reward-result" class="hidden mt-8 p-6 bg-white/20 backdrop-blur-sm rounded-2xl animate-bounce-in">
+                <div class="text-4xl mb-2">🎉</div>
+                <h3 class="text-xl font-bold mb-2">You Won!</h3>
+                <div class="text-lg font-semibold mb-2">$5 Starbucks Gift Card</div>
+                <p class="text-sm opacity-90 mb-4">Check your email for your reward code!</p>
+                <button onclick="finishChallenge()" class="bg-white text-secondary py-2 px-6 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+                    Awesome! 🙌
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success/Thank You Screen -->
+    <div id="success-screen" class="min-h-screen bg-gradient-to-br from-accent to-green-400 relative overflow-hidden hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 left-10 w-20 h-20 bg-white rounded-full animate-bounce"></div>
+            <div class="absolute top-40 right-16 w-16 h-16 bg-white rounded-full animate-bounce" style="animation-delay: 0.5s;"></div>
+            <div class="absolute bottom-32 left-20 w-12 h-12 bg-white rounded-full animate-bounce" style="animation-delay: 1s;"></div>
+        </div>
+        
+        <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center text-white">
+            <div class="animate-bounce-in mb-8">
+                <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 mx-auto shadow-2xl">
+                    <span class="text-4xl">🏆</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-4">Challenge Complete!</h1>
+                <p class="text-lg opacity-90 mb-8 max-w-sm">Thanks for sharing your awesome room! Your RoomReel is now live and helping other students.</p>
+            </div>
+            
+            <!-- Final Stats -->
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 mb-8 w-full max-w-sm">
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold">125</div>
+                        <div class="text-sm opacity-90">Points Earned</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold">5</div>
+                        <div class="text-sm opacity-90">Clips Recorded</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold">26s</div>
+                        <div class="text-sm opacity-90">Total Duration</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold">1</div>
+                        <div class="text-sm opacity-90">Reward Won</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="w-full max-w-sm space-y-4">
+                <button onclick="shareVideo()" class="w-full bg-white text-accent py-3 px-6 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    📤 Share Your RoomReel
+                </button>
+                <button onclick="startNewChallenge()" class="w-full bg-white/20 backdrop-blur-sm text-white py-3 px-6 rounded-2xl font-semibold border-2 border-white/30 hover:bg-white/30 transform hover:scale-105 transition-all duration-300">
+                    🎬 Try Another Challenge
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let currentScreen = 'welcome-screen';
+        let selectedChallenge = null;
+        let currentStep = 0;
+        let recordingState = 'idle'; // idle, countdown, recording, complete
+        let totalPoints = 0;
+        
+        // Screen navigation
+        function showScreen(screenId) {
+            // Hide all screens
+            const screens = ['welcome-screen', 'challenge-setup', 'camera-interface', 'recording-complete', 'final-review', 'reward-wheel', 'success-screen'];
+            screens.forEach(screen => {
+                document.getElementById(screen).classList.add('hidden');
+            });
+            
+            // Show target screen
+            document.getElementById(screenId).classList.remove('hidden');
+            currentScreen = screenId;
+        }
+        
+        // Challenge selection
+        function selectChallenge(challengeType) {
+            selectedChallenge = challengeType;
+            showScreen('challenge-setup');
+            
+            // TODO: Load appropriate challenge prompts based on type
+            // Room tour vs Day in life would have different prompts
+        }
+        
+        // Start the recording challenge
+        function startChallenge() {
+            currentStep = 0;
+            showScreen('camera-interface');
+            
+            // TODO: Initialize camera using WebRTC
+            // navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        }
+        
+        // Recording controls
+        function startRecording() {
+            if (recordingState === 'idle') {
+                startCountdown();
+            }
+        }
+        
+        function startCountdown() {
+            recordingState = 'countdown';
+            const countdownOverlay = document.getElementById('countdown-overlay');
+            const countdownNumber = document.getElementById('countdown-number');
+            
+            countdownOverlay.classList.remove('hidden');
+            
+            let count = 3;
+            countdownNumber.textContent = count;
+            
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownNumber.textContent = count;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownOverlay.classList.add('hidden');
+                    beginRecording();
+                }
+            }, 1000);
+        }
+        
+        function beginRecording() {
+            recordingState = 'recording';
+            const recordBtn = document.getElementById('record-btn');
+            const timer = document.getElementById('recording-timer');
+            
+            recordBtn.classList.add('animate-pulse');
+            timer.classList.remove('hidden');
+            
+            // TODO: Start actual video recording using MediaRecorder API
+            // const mediaRecorder = new MediaRecorder(stream);
+            
+            // Simulate 5-second recording
+            let seconds = 5;
+            const recordingInterval = setInterval(() => {
+                timer.querySelector('span').textContent = `0:0${seconds}`;
+                seconds--;
+                
+                if (seconds < 0) {
+                    clearInterval(recordingInterval);
+                    stopRecording();
+                }
+            }, 1000);
+        }
+        
+        function stopRecording() {
+            recordingState = 'complete';
+            totalPoints += 25;
+            
+            // TODO: Stop MediaRecorder and save clip
+            // mediaRecorder.stop();
+            
+            showScreen('recording-complete');
+            
+            // Trigger celebration animation
+            createCelebrationEffect();
+        }
+        
+        function createCelebrationEffect() {
+            // Create floating point animation
+            const pointsElement = document.createElement('div');
+            pointsElement.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl font-bold text-accent z-50 animate-bounce-in';
+            pointsElement.textContent = '+25 Points!';
+            document.body.appendChild(pointsElement);
+            
+            setTimeout(() => {
+                document.body.removeChild(pointsElement);
+            }, 2000);
+        }
+        
+        function continueToNextClip() {
+            currentStep++;
+            
+            if (currentStep < 5) {
+                // More clips to record
+                showScreen('camera-interface');
+                
+                // TODO: Update prompt overlay for next step
+                // updatePromptOverlay(currentStep);
+            } else {
+                // All clips complete
+                showScreen('final-review');
+            }
+        }
+        
+        function submitVideo() {
+            // TODO: Upload video clips to server
+            // const formData = new FormData();
+            // clips.forEach(clip => formData.append('clips[]', clip));
+            
+            showScreen('reward-wheel');
+        }
+        
+        function spinWheel() {
+            const wheel = document.getElementById('spin-wheel');
+            const spinBtn = document.getElementById('spin-btn');
+            
+            spinBtn.disabled = true;
+            spinBtn.textContent = 'SPINNING...';
+            
+            // Random rotation between 1800-3600 degrees (5-10 full rotations)
+            const rotation = Math.random() * 1800 + 1800;
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            wheel.style.transition = 'transform 3s cubic-bezier(0.23, 1, 0.32, 1)';
+            
+            setTimeout(() => {
+                showReward();
+            }, 3500);
+        }
+        
+        function showReward() {
+            const rewards = [
+                '$5 Starbucks Gift Card',
+                'Spotify Premium Month',
+                '$10 Pizza Voucher',
+                'Netflix Month Free',
+                '$15 Amazon Credit',
+                'Study Guide Bundle',
+                '$20 Cash Prize',
+                'Mystery Box'
+            ];
+            
+            const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+            const resultDiv = document.getElementById('reward-result');
+            
+            resultDiv.querySelector('.text-lg').textContent = randomReward;
+            resultDiv.classList.remove('hidden');
+        }
+        
+        function finishChallenge() {
+            showScreen('success-screen');
+        }
+        
+        function shareVideo() {
+            // TODO: Implement native sharing or copy link
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out my RoomReel!',
+                    text: 'I just created an awesome room tour video with RoomReel Challenge!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                alert('Link copied to clipboard!');
+            }
+        }
+        
+        function startNewChallenge() {
+            // Reset state
+            currentStep = 0;
+            totalPoints = 0;
+            selectedChallenge = null;
+            recordingState = 'idle';
+            
+            showScreen('welcome-screen');
+        }
+        
+        // Initialize app
+        (function() {
+            // Set up initial screen
+            showScreen('welcome-screen');
+            
+            // TODO: Check for camera permissions
+            // TODO: Initialize WebRTC
+            // TODO: Set up service worker for offline functionality
+        })();
+    </script>
+</body>
+</html>

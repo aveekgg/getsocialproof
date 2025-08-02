@@ -29,21 +29,70 @@ export default function ChallengeSetup({ challenge, onStartChallenge, onBack }: 
       </div>
       
       <div className="p-6 pb-safe">
-        <div className="space-y-4 mb-8">
-          {challenge.steps.map((step, index) => (
-            <div key={step.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                index === 0 ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'
-              }`}>
-                {step.id}
+        <div className="mb-6">
+          <h3 className="text-lg font-bold mb-3">💡 Prompt Suggestions</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Here are some ideas to get you started. You can record any or all of these - it's up to you!
+          </p>
+        </div>
+
+        <div className="space-y-3 mb-8">
+          {(!challenge.promptPool || challenge.promptPool.length === 0) ? (
+            // Fallback prompts if server data isn't loaded
+            <div className="space-y-3">
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                <div className="text-2xl">🏩</div>
+                <div className="flex-1">
+                  <h4 className="font-semibold">Show your favorite corner in the room</h4>
+                  <p className="text-sm text-gray-600">5s • +{challenge.pointsPerStep} points</p>
+                </div>
+                <span className="text-lg">🎬</span>
               </div>
-              <div className="flex-1">
-                <h4 className="font-semibold">{step.emoji} {step.title}</h4>
-                <p className="text-sm text-gray-600">{step.description}</p>
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                <div className="text-2xl">🎧</div>
+                <div className="flex-1">
+                  <h4 className="font-semibold">What's your study setup like?</h4>
+                  <p className="text-sm text-gray-600">5s • +{challenge.pointsPerStep} points</p>
+                </div>
+                <span className="text-lg">🎬</span>
               </div>
-              <span className={`text-2xl ${index === 0 ? '' : 'opacity-30'}`}>📹</span>
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                <div className="text-2xl">🍜</div>
+                <div className="flex-1">
+                  <h4 className="font-semibold">Take us to your kitchen – what do you cook most?</h4>
+                  <p className="text-sm text-gray-600">6s • +{challenge.pointsPerStep} points</p>
+                </div>
+                <span className="text-lg">🎬</span>
+              </div>
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                <div className="text-2xl">❤️</div>
+                <div className="flex-1">
+                  <h4 className="font-semibold">Say one thing you love most about living here</h4>
+                  <p className="text-sm text-gray-600">4s • +{challenge.pointsPerStep} points</p>
+                </div>
+                <span className="text-lg">🎬</span>
+              </div>
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                <div className="text-2xl">🧘</div>
+                <div className="flex-1">
+                  <h4 className="font-semibold">Your chill-out zone</h4>
+                  <p className="text-sm text-gray-600">5s • +{challenge.pointsPerStep} points</p>
+                </div>
+                <span className="text-lg">🎬</span>
+              </div>
             </div>
-          ))}
+          ) : (
+            challenge.promptPool.map((prompt, index) => (
+              <div key={prompt.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
+                <div className="text-2xl">{prompt.emoji}</div>
+                <div className="flex-1">
+                  <h4 className="font-semibold">{prompt.text}</h4>
+                  <p className="text-sm text-gray-600">{prompt.duration}s • +{challenge.pointsPerStep} points</p>
+                </div>
+                <span className="text-lg">🎬</span>
+              </div>
+            ))
+          )}
         </div>
         
         <div className="bg-accent/10 border border-accent/30 rounded-xl p-4 mb-8">
@@ -64,7 +113,7 @@ export default function ChallengeSetup({ challenge, onStartChallenge, onBack }: 
           data-testid="button-start-recording"
           className="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse-glow"
         >
-          🎬 Let's Go!
+          🎥 Let's Start Recording
         </button>
       </div>
     </div>

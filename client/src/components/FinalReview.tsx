@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Challenge, VideoClip } from "@shared/schema";
+import { Challenge, VideoClip, ChallengePrompt } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface FinalReviewProps {
   challenge: Challenge;
+  selectedPrompts: ChallengePrompt[];
   completedClips: VideoClip[];
   totalPoints: number;
   onSubmit: (submissionId: string) => void;
 }
 
-export default function FinalReview({ challenge, completedClips, totalPoints, onSubmit }: FinalReviewProps) {
+export default function FinalReview({ challenge, selectedPrompts, completedClips, totalPoints, onSubmit }: FinalReviewProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const { toast } = useToast();
   
@@ -51,8 +52,8 @@ export default function FinalReview({ challenge, completedClips, totalPoints, on
   return (
     <div className="min-h-screen bg-white">
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-white">
-        <h2 className="text-2xl font-bold mb-2">🎬 Your RoomReel</h2>
-        <p className="opacity-90">Looking good! Ready to share your {challenge.name.toLowerCase()}?</p>
+        <h2 className="text-2xl font-bold mb-2">🎞️ Your Reel Is Ready!</h2>
+        <p className="opacity-90">Looks good! Ready to share your RoomReel and win a reward?</p>
       </div>
       
       <div className="p-6">
@@ -94,14 +95,14 @@ export default function FinalReview({ challenge, completedClips, totalPoints, on
         <div className="space-y-3 mb-6">
           <h3 className="font-semibold mb-3">📋 Your Clips</h3>
           
-          {challenge.steps.map((step, index) => {
-            const clip = completedClips.find(c => c.stepId === step.id);
+          {selectedPrompts.map((prompt, index) => {
+            const clip = completedClips.find(c => c.stepId === index + 1);
             return (
-              <div key={step.id} className="flex items-center space-x-3 p-3 bg-accent/10 rounded-xl">
+              <div key={prompt.id} className="flex items-center space-x-3 p-3 bg-accent/10 rounded-xl">
                 <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-white text-sm">✓</div>
                 <div className="flex-1">
-                  <div className="font-medium">{step.emoji} {step.title}</div>
-                  <div className="text-sm text-gray-600">{clip?.duration || step.duration}s</div>
+                  <div className="font-medium">{prompt.emoji} {prompt.text}</div>
+                  <div className="text-sm text-gray-600">{clip?.duration || prompt.duration}s</div>
                 </div>
                 <span className="text-accent text-sm">+{challenge.pointsPerStep}pts</span>
               </div>
@@ -116,14 +117,24 @@ export default function FinalReview({ challenge, completedClips, totalPoints, on
           <div className="text-sm opacity-90">You're on fire! 🔥</div>
         </div>
         
-        <button 
-          onClick={() => submitMutation.mutate()}
-          disabled={submitMutation.isPending}
-          data-testid="button-submit-video"
-          className="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
-        >
-          {submitMutation.isPending ? '🚀 Submitting...' : '🚀 Submit My RoomReel'}
-        </button>
+        <div className="space-y-3">
+          <button 
+            onClick={handlePlayPreview}
+            data-testid="button-preview"
+            className="w-full bg-gray-100 text-gray-800 py-3 px-6 rounded-2xl font-semibold border-2 border-gray-200 hover:bg-gray-200 transition-all duration-300"
+          >
+            👁️ Preview
+          </button>
+          
+          <button 
+            onClick={() => submitMutation.mutate()}
+            disabled={submitMutation.isPending}
+            data-testid="button-submit-video"
+            className="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
+          >
+            {submitMutation.isPending ? '🎯 Submitting...' : '🎯 Submit & Spin'}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -13,9 +13,14 @@ export const challenges = pgTable("challenges", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
   description: text("description").notNull(),
+  tagline: text("tagline"),
   steps: json("steps").$type<ChallengeStep[]>().notNull(),
+  promptPool: json("prompt_pool").$type<ChallengePrompt[]>(),
+  selectedPrompts: json("selected_prompts").$type<string[]>(),
   pointsPerStep: integer("points_per_step").notNull().default(25),
   dayNumber: integer("day_number").notNull().default(1), // 1-5 for the timeline
+  durationDays: integer("duration_days").notNull().default(3),
+  maxPrompts: integer("max_prompts").notNull().default(5),
   unlockDate: timestamp("unlock_date").notNull(),
   createdAt: timestamp("created_at").default(sql`now()`).notNull(),
 });
@@ -45,6 +50,23 @@ export interface ChallengeStep {
   description: string;
   emoji: string;
   duration: number; // seconds
+}
+
+export interface ChallengePrompt {
+  id: string;
+  text: string;
+  emoji: string;
+  duration: number; // seconds
+}
+
+export interface ChallengeTemplate {
+  id: string;
+  title: string;
+  tagline: string;
+  duration_days: number;
+  max_prompts: number;
+  prompt_pool: ChallengePrompt[];
+  rewards: string[];
 }
 
 export interface VideoClip {
@@ -87,3 +109,6 @@ export type Submission = typeof submissions.$inferSelect;
 
 export type InsertReward = z.infer<typeof insertRewardSchema>;
 export type Reward = typeof rewards.$inferSelect;
+
+// Export the new types
+export type { ChallengePrompt, ChallengeTemplate };

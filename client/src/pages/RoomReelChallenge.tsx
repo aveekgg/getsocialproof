@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import WelcomeScreen from "@/components/WelcomeScreen";
+import ChallengeGallery from "@/components/ChallengeGallery";
 import ChallengeSetup from "@/components/ChallengeSetup";
 import CameraInterface from "@/components/CameraInterface";
 import RecordingComplete from "@/components/RecordingComplete";
 import FinalReview from "@/components/FinalReview";
 import RewardWheel from "@/components/RewardWheel";
 import SuccessScreen from "@/components/SuccessScreen";
-import type { Challenge, VideoClip } from "@shared/schema";
+import type { Challenge, VideoClip, ChallengePrompt } from "@shared/schema";
 
-type Screen = 'welcome' | 'setup' | 'camera' | 'complete' | 'review' | 'reward' | 'success';
+type Screen = 'gallery' | 'setup' | 'camera' | 'complete' | 'review' | 'reward' | 'success';
 
 export default function RoomReelChallenge() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('gallery');
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [selectedPrompts, setSelectedPrompts] = useState<ChallengePrompt[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [completedClips, setCompletedClips] = useState<VideoClip[]>([]);
   const [totalPoints, setTotalPoints] = useState(0);
@@ -27,6 +28,15 @@ export default function RoomReelChallenge() {
     const challenge = challenges.find(c => c.id === challengeId);
     if (challenge) {
       setSelectedChallenge(challenge);
+      // Use all prompts from the challenge, or fallback prompts
+      const fallbackPrompts: ChallengePrompt[] = [
+        { id: "favorite-corner", text: "Show your favorite corner in the room", emoji: "🏩", duration: 5 },
+        { id: "study-setup", text: "What's your study setup like?", emoji: "🎧", duration: 5 },
+        { id: "kitchen-tour", text: "Take us to your kitchen – what do you cook most?", emoji: "🍜", duration: 6 },
+        { id: "love-most", text: "Say one thing you love most about living here", emoji: "❤️", duration: 4 },
+        { id: "chill-zone", text: "Your chill-out zone", emoji: "🧘", duration: 5 }
+      ];
+      setSelectedPrompts(challenge.promptPool && challenge.promptPool.length > 0 ? challenge.promptPool : fallbackPrompts);
       setCurrentScreen('setup');
     }
   };
@@ -37,20 +47,9 @@ export default function RoomReelChallenge() {
   };
 
   const handleClipComplete = (clip: VideoClip) => {
-    const newClips = [...completedClips, clip];
-    setCompletedClips(newClips);
-    setTotalPoints(prev => prev + (selectedChallenge?.pointsPerStep || 25));
-    setCurrentScreen('complete');
-  };
-
-  const handleContinueRecording = () => {
-    const nextStep = currentStep + 1;
-    if (nextStep < (selectedChallenge?.steps.length || 0)) {
-      setCurrentStep(nextStep);
-      setCurrentScreen('camera');
-    } else {
-      setCurrentScreen('review');
-    }
+    setCompletedClips([clip]); // Single video for entire challenge
+    setTotalPoints((selectedChallenge?.pointsPerStep || 25) * selectedPrompts.length);
+    setCurrentScreen('review'); // Skip the complete screen, go straight to review
   };
 
   const handleSubmitVideo = async (submissionId: string) => {
@@ -64,8 +63,9 @@ export default function RoomReelChallenge() {
 
   const handleStartNewChallenge = () => {
     // Reset all state
-    setCurrentScreen('welcome');
+    setCurrentScreen('gallery');
     setSelectedChallenge(null);
+    setSelectedPrompts([]);
     setCurrentStep(0);
     setCompletedClips([]);
     setTotalPoints(0);
@@ -86,15 +86,15 @@ export default function RoomReelChallenge() {
 
   const commonProps = {
     onBack: () => {
-      if (currentScreen === 'setup') setCurrentScreen('welcome');
+      if (currentScreen === 'setup') setCurrentScreen('gallery');
       else if (currentScreen === 'camera') setCurrentScreen('setup');
     }
   };
 
   switch (currentScreen) {
-    case 'welcome':
+    case 'gallery':
       return (
-        <WelcomeScreen
+        <ChallengeGallery
           challenges={challenges}
           onChallengeSelect={handleChallengeSelect}
         />
@@ -113,9 +113,8 @@ export default function RoomReelChallenge() {
       return (
         <CameraInterface
           challenge={selectedChallenge!}
-          currentStep={currentStep}
-          totalSteps={selectedChallenge?.steps.length || 0}
-          onClipComplete={handleClipComplete}
+          selectedPrompts={selectedPrompts}
+          onVideoComplete={handleClipComplete}
           {...commonProps}
         />
       );
@@ -124,8 +123,9 @@ export default function RoomReelChallenge() {
       return (
         <RecordingComplete
           challenge={selectedChallenge!}
+          selectedPrompts={selectedPrompts}
           currentStep={currentStep}
-          totalSteps={selectedChallenge?.steps.length || 0}
+          totalSteps={selectedPrompts.length}
           pointsEarned={selectedChallenge?.pointsPerStep || 25}
           totalPoints={totalPoints}
           onContinue={handleContinueRecording}
@@ -137,6 +137,7 @@ export default function RoomReelChallenge() {
       return (
         <FinalReview
           challenge={selectedChallenge!}
+          selectedPrompts={selectedPrompts}
           completedClips={completedClips}
           totalPoints={totalPoints}
           onSubmit={handleSubmitVideo}
@@ -174,6 +175,6 @@ export default function RoomReelChallenge() {
       );
     
     default:
-      return <WelcomeScreen challenges={challenges} onChallengeSelect={handleChallengeSelect} />;
+      return <ChallengeGallery challenges={challenges} onChallengeSelect={handleChallengeSelect} />;
   }
 }

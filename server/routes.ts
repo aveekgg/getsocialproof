@@ -51,26 +51,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertSubmissionSchema.parse(req.body);
       const submission = await storage.createSubmission(validatedData);
       
-      // Generate random reward with weighted distribution
+      // Generate random reward with weighted distribution - Updated to match changes.md
       const rewards = [
         // Common rewards (70% chance)
-        { type: "gift-card", value: "£3 Costa Coffee", weight: 15 },
-        { type: "voucher", value: "£5 Subway Voucher", weight: 15 },
-        { type: "credit", value: "£5 Amazon Credit", weight: 15 },
-        { type: "voucher", value: "Free McDonald's Meal", weight: 10 },
-        { type: "gift-card", value: "£4 Greggs Card", weight: 10 },
-        { type: "bundle", value: "Study Snacks Box", weight: 5 },
+        { type: "coffee", value: "Starbucks ☕", weight: 20 },
+        { type: "gym", value: "Gym Trial 💪", weight: 15 },
+        { type: "music", value: "Spotify 1-Month 🎧", weight: 15 },
+        { type: "grocery", value: "Grocery Voucher 🛒", weight: 15 },
+        { type: "social", value: "Feature Me on IG 🌟", weight: 5 },
         
-        // Rare rewards (25% chance)
-        { type: "subscription", value: "Spotify Premium (3 Months)", weight: 8 },
-        { type: "voucher", value: "£15 Domino's Voucher", weight: 7 },
-        { type: "subscription", value: "Netflix (1 Month)", weight: 5 },
-        { type: "credit", value: "£20 Amazon Voucher", weight: 5 },
-        
-        // Epic rewards (5% chance)
-        { type: "cash", value: "£50 PayPal Cash", weight: 2 },
-        { type: "voucher", value: "£100 ASOS Voucher", weight: 2 },
-        { type: "mystery", value: "Epic Student Bundle", weight: 1 }
+        // Surprise rewards (30% chance)
+        { type: "surprise", value: "Surprise 🏰", weight: 30 }
       ];
       
       // Weighted random selection

@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Challenge, type InsertChallenge, type Submission, type InsertSubmission, type Reward, type InsertReward, type ChallengeStep } from "@shared/schema";
+import { type User, type InsertUser, type Challenge, type InsertChallenge, type Submission, type InsertSubmission, type Reward, type InsertReward, type ChallengeStep, type ChallengePrompt } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -37,98 +37,133 @@ export class MemStorage implements IStorage {
     const today = new Date();
     const getUnlockDate = (dayOffset: number) => {
       const date = new Date(today);
-      date.setDate(today.getDate() + dayOffset);
+      date.setDate(today.getDate() - dayOffset); // Make all challenges available now
       return date;
     };
 
-    const roomTourSteps: ChallengeStep[] = [
-      { id: 1, title: "Your bedroom vibe", description: "Give us the full tour of where you sleep and chill", emoji: "🛏️", duration: 6 },
-      { id: 2, title: "Study setup reveal", description: "Show off your workspace - messy or clean, we love it all", emoji: "💻", duration: 5 },
-      { id: 3, title: "Kitchen chaos", description: "What's in your fridge? Cooking space? The real uni life", emoji: "🍜", duration: 6 },
-      { id: 4, title: "The essentials", description: "Quick bathroom tour - keeping it real", emoji: "🚿", duration: 4 },
-      { id: 5, title: "Your happy place", description: "That one spot where you actually feel at home", emoji: "✨", duration: 5 }
+    // "My Room, My Vibe" challenge prompts from changes.md
+    const myRoomPrompts: ChallengePrompt[] = [
+      { id: "favorite-corner", text: "Show your favorite corner in the room", emoji: "🏩", duration: 5 },
+      { id: "study-setup", text: "What's your study setup like?", emoji: "🎧", duration: 5 },
+      { id: "kitchen-tour", text: "Take us to your kitchen – what do you cook most?", emoji: "🍜", duration: 6 },
+      { id: "window-view", text: "What's your view like from the window?", emoji: "🌇", duration: 4 },
+      { id: "love-most", text: "Say one thing you love most about living here", emoji: "❤️", duration: 4 },
+      { id: "fridge-tour", text: "What's in your fridge?", emoji: "🧃", duration: 4 },
+      { id: "roommate-shoutout", text: "A roommate shoutout", emoji: "👋", duration: 5 },
+      { id: "chill-zone", text: "Your chill-out zone", emoji: "🧘", duration: 5 }
     ];
 
-    const dayInLifeSteps: ChallengeStep[] = [
-      { id: 1, title: "Morning reality check", description: "How do you actually start your day? Coffee first?", emoji: "☕", duration: 6 },
-      { id: 2, title: "Uni grind", description: "Lecture halls, library sessions, or cramming at home", emoji: "📚", duration: 5 },
-      { id: 3, title: "Food situation", description: "Meal deal? Cooking? Takeaway? Show us the real deal", emoji: "🥪", duration: 5 },
-      { id: 4, title: "Social moments", description: "Hanging with mates, society events, or just good vibes", emoji: "👯", duration: 6 },
-      { id: 5, title: "Night mode", description: "How you unwind - Netflix, gaming, or early bedtime?", emoji: "🌙", duration: 5 }
+    // "A Day in the Life" challenge prompts
+    const dayInLifePrompts: ChallengePrompt[] = [
+      { id: "morning-routine", text: "Your morning routine", emoji: "🚱", duration: 5 },
+      { id: "uni-commute", text: "Uni walk or commute", emoji: "🏃‍♂️", duration: 6 },
+      { id: "lunch-time", text: "What's for lunch?", emoji: "🍱", duration: 4 },
+      { id: "post-class-hangout", text: "Where do you hang out post-classes?", emoji: "🧳", duration: 5 },
+      { id: "study-grind", text: "Study grind moment", emoji: "💻", duration: 5 },
+      { id: "evening-chill", text: "Chill time in the evening", emoji: "🌯", duration: 5 },
+      { id: "unexpected-moment", text: "Something unexpected today!", emoji: "🎉", duration: 4 },
+      { id: "night-view", text: "Night-time view", emoji: "🌙", duration: 4 }
     ];
 
-    const studySpaceSteps: ChallengeStep[] = [
-      { id: 1, title: "Your study sanctuary", description: "Show us your main study spot", emoji: "📖", duration: 5 },
-      { id: 2, title: "Study snacks reveal", description: "What fuels your study sessions?", emoji: "🍿", duration: 4 },
-      { id: 3, title: "Organization game", description: "How do you keep things organized (or not)?", emoji: "📝", duration: 5 },
-      { id: 4, title: "Productivity tools", description: "Apps, planners, or just pure chaos?", emoji: "⚡", duration: 4 },
-      { id: 5, title: "Study playlist", description: "What gets you in the zone?", emoji: "🎧", duration: 3 }
+    // "Flatmates Say..." challenge prompts
+    const flatmatesPrompts: ChallengePrompt[] = [
+      { id: "introductions", text: "Everyone introduce themselves", emoji: "👋", duration: 6 },
+      { id: "one-word", text: "One word to describe this flat", emoji: "🤭", duration: 3 },
+      { id: "messy-one", text: "Who's the messy one?", emoji: "🦜", duration: 4 },
+      { id: "best-moment", text: "What's the best shared moment?", emoji: "📸", duration: 5 },
+      { id: "kitchen-tour", text: "Group tour of kitchen/dining", emoji: "🥣", duration: 6 },
+      { id: "recommend", text: "Would you recommend this place?", emoji: "💯", duration: 4 }
     ];
 
-    const uniLifeSteps: ChallengeStep[] = [
-      { id: 1, title: "Campus highlights", description: "Show us your favourite spots on campus", emoji: "🏫", duration: 6 },
-      { id: 2, title: "Lecture hall vibes", description: "Where the magic (or boredom) happens", emoji: "🎓", duration: 5 },
-      { id: 3, title: "Library life", description: "Your go-to study spaces and secret spots", emoji: "📚", duration: 5 },
-      { id: 4, title: "Social societies", description: "Clubs, societies, or just hanging out", emoji: "🎉", duration: 6 },
-      { id: 5, title: "Campus food tour", description: "Best (and worst) places to grab a bite", emoji: "🍔", duration: 5 }
+    // "Neighborhood Hacks" challenge prompts
+    const neighborhoodPrompts: ChallengePrompt[] = [
+      { id: "cheapest-grocery", text: "Cheapest grocery?", emoji: "🛒", duration: 4 },
+      { id: "favorite-hangout", text: "Favorite nearby hangout?", emoji: "🎮", duration: 5 },
+      { id: "coffee-spot", text: "Coffee or breakfast spot?", emoji: "☕", duration: 4 },
+      { id: "study-spot", text: "Study spot outside your room?", emoji: "📚", duration: 5 },
+      { id: "hidden-gems", text: "Hidden gems?", emoji: "🗺️", duration: 5 },
+      { id: "safe-route", text: "Safest route back home?", emoji: "🚶", duration: 5 },
+      { id: "wish-knew", text: "One thing you wish you knew earlier", emoji: "🎯", duration: 4 }
     ];
 
-    const friendsSteps: ChallengeStep[] = [
-      { id: 1, title: "Squad introduction", description: "Introduce us to your uni crew", emoji: "👥", duration: 6 },
-      { id: 2, title: "Flat/house mates", description: "The people you live with (chaos included)", emoji: "🏠", duration: 5 },
-      { id: 3, title: "Study buddies", description: "Who keeps you motivated (or distracted)?", emoji: "📖", duration: 5 },
-      { id: 4, title: "Weekend plans", description: "How you and your mates unwind", emoji: "🎊", duration: 6 },
-      { id: 5, title: "Group dynamics", description: "The funny moments and inside jokes", emoji: "😂", duration: 5 }
+    // "What I Wish I Knew" challenge prompts
+    const wishIKnewPrompts: ChallengePrompt[] = [
+      { id: "surprised-most", text: "What surprised you the most here?", emoji: "😮", duration: 5 },
+      { id: "hard-to-adjust", text: "What was hard to get used to?", emoji: "😵", duration: 5 },
+      { id: "weird-rule", text: "A weird rule or policy here", emoji: "🗒️", duration: 4 },
+      { id: "useful-thing", text: "Most useful thing you packed", emoji: "🎒", duration: 4 },
+      { id: "useless-thing", text: "Most useless thing you brought", emoji: "🛫", duration: 4 },
+      { id: "big-tip", text: "One big tip for a new resident", emoji: "🔑", duration: 5 }
     ];
 
     const challenges = [
       {
-        id: "room-tour",
-        name: "Room Tour Challenge",
-        description: "Give us the honest tour of your uni accommodation!",
-        steps: roomTourSteps,
+        id: "my-room-my-vibe",
+        name: "My Room, My Vibe",
+        tagline: "Show what makes your space feel like home",
+        description: "Help the next student imagine living here — we'll guide you with quick clips.",
+        steps: [], // Legacy field, keeping for compatibility
+        promptPool: myRoomPrompts,
         pointsPerStep: 25,
         dayNumber: 1,
+        durationDays: 5,
+        maxPrompts: 5,
         unlockDate: getUnlockDate(0),
         createdAt: new Date()
       },
       {
-        id: "day-in-life",
-        name: "A Day in My Uni Life",
+        id: "a-day-in-the-life",
+        name: "A Day in the Life",
+        tagline: "What's your student life really like?",
         description: "Show us what a real day looks like as a UK student!",
-        steps: dayInLifeSteps,
+        steps: [], // Legacy field
+        promptPool: dayInLifePrompts,
         pointsPerStep: 25,
         dayNumber: 2,
+        durationDays: 5,
+        maxPrompts: 5,
         unlockDate: getUnlockDate(1),
         createdAt: new Date()
       },
       {
-        id: "study-space",
-        name: "Study Space Secrets",
-        description: "Reveal your study setup and productivity hacks!",
-        steps: studySpaceSteps,
+        id: "flatmates-say",
+        name: "Flatmates Say...",
+        tagline: "What do your flatmates love (or roast) about living here?",
+        description: "Get your flatmates involved and show the real dynamics!",
+        steps: [], // Legacy field
+        promptPool: flatmatesPrompts,
         pointsPerStep: 30,
         dayNumber: 3,
+        durationDays: 5,
+        maxPrompts: 5,
         unlockDate: getUnlockDate(2),
         createdAt: new Date()
       },
       {
-        id: "uni-life",
-        name: "Campus Life Tour",
-        description: "Take us around your university campus!",
-        steps: uniLifeSteps,
+        id: "neighborhood-hacks",
+        name: "Neighborhood Hacks",
+        tagline: "Tips for surviving (and thriving) in your student city",
+        description: "Share your local knowledge and help others navigate!",
+        steps: [], // Legacy field
+        promptPool: neighborhoodPrompts,
         pointsPerStep: 35,
         dayNumber: 4,
+        durationDays: 5,
+        maxPrompts: 5,
         unlockDate: getUnlockDate(3),
         createdAt: new Date()
       },
       {
-        id: "friends-social",
-        name: "Friends & Social Life",
-        description: "Show us your uni social circle and good times!",
-        steps: friendsSteps,
+        id: "what-i-wish-i-knew",
+        name: "What I Wish I Knew",
+        tagline: "Reflect, rant, or review — it all helps someone else",
+        description: "Share your wisdom and help future students!",
+        steps: [], // Legacy field
+        promptPool: wishIKnewPrompts,
         pointsPerStep: 40,
         dayNumber: 5,
+        durationDays: 5,
+        maxPrompts: 5,
         unlockDate: getUnlockDate(4),
         createdAt: new Date()
       }

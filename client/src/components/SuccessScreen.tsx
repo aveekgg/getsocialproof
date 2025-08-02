@@ -26,8 +26,8 @@ export default function SuccessScreen({
           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 mx-auto shadow-2xl">
             <span className="text-4xl">🏆</span>
           </div>
-          <h1 className="text-4xl font-bold mb-4">Absolute Legend!</h1>
-          <p className="text-lg opacity-90 mb-8 max-w-sm">Cheers for sharing your space! Your RoomReel is helping fellow students find their perfect home.</p>
+          <h1 className="text-4xl font-bold mb-4">🚀 You're Live!</h1>
+          <p className="text-lg opacity-90 mb-8 max-w-sm">Your reel's uploaded — your story can help someone book with confidence.</p>
         </div>
         
         {/* Final Stats */}
@@ -58,7 +58,7 @@ export default function SuccessScreen({
             data-testid="button-share-video"
             className="w-full bg-white text-accent py-3 px-6 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
           >
-            📤 Share Your RoomReel
+            📤 Share My Reel
           </button>
           <button 
             onClick={onStartNew}
