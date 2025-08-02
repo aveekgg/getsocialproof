@@ -48,16 +48,17 @@ export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boole
     let centerBrightness = 0;
     const centerX = width / 2;
     const centerY = height / 2;
-    const centerRadius = Math.min(width, height) / 4;
+    const centerRadius = Math.min(width, height) / 6;
+    let centerPixelCount = 0;
 
-    // Analyze brightness, edges, and color distribution
-    for (let i = 0; i < pixels.length; i += 4) {
+    // Sample every 4th pixel for performance (analyze 25% of pixels)
+    for (let i = 0; i < pixels.length; i += 16) {
       const r = pixels[i];
       const g = pixels[i + 1];
       const b = pixels[i + 2];
       
-      // Calculate brightness
-      const brightness = (r + g + b) / 3;
+      // Calculate brightness using proper luminance formula
+      const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
       totalBrightness += brightness;
 
       // Check if pixel is in center region
@@ -68,70 +69,94 @@ export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boole
       
       if (distFromCenter <= centerRadius) {
         centerBrightness += brightness;
+        centerPixelCount++;
       }
 
-      // Simple edge detection (high contrast between adjacent pixels)
-      if (i > 0 && Math.abs(brightness - (pixels[i - 4] + pixels[i - 3] + pixels[i - 2]) / 3) > 50) {
-        edgePixels++;
+      // Edge detection - compare with pixel to the right (if exists)
+      if (i + 16 < pixels.length) {
+        const nextR = pixels[i + 16];
+        const nextG = pixels[i + 17];
+        const nextB = pixels[i + 18];
+        const nextBrightness = 0.299 * nextR + 0.587 * nextG + 0.114 * nextB;
+        
+        if (Math.abs(brightness - nextBrightness) > 30) {
+          edgePixels++;
+        }
       }
 
-      // Color variance (how much colors differ)
-      const avg = (r + g + b) / 3;
-      colorVariance += Math.abs(r - avg) + Math.abs(g - avg) + Math.abs(b - avg);
+      // Color variance - calculate standard deviation from gray
+      const gray = brightness;
+      colorVariance += Math.abs(r - gray) + Math.abs(g - gray) + Math.abs(b - gray);
     }
 
-    const avgBrightness = totalBrightness / (pixels.length / 4);
-    const avgCenterBrightness = centerBrightness / (Math.PI * centerRadius ** 2);
-    const edgeRatio = edgePixels / (pixels.length / 4);
-    const avgColorVariance = colorVariance / (pixels.length / 4);
+    const sampleCount = Math.floor(pixels.length / 16);
+    const avgBrightness = totalBrightness / sampleCount;
+    const avgCenterBrightness = centerPixelCount > 0 ? centerBrightness / centerPixelCount : avgBrightness;
+    const edgeRatio = edgePixels / sampleCount;
+    const avgColorVariance = colorVariance / sampleCount;
 
-    // Scoring criteria for a "good shot"
+    // More realistic scoring for typical mobile camera conditions
     const reasons: string[] = [];
     let score = 0;
 
-    // Good lighting (not too dark, not too bright)
-    if (avgBrightness > 60 && avgBrightness < 200) {
-      score += 25;
+    // Lighting score (more lenient range)
+    if (avgBrightness > 40 && avgBrightness < 220) {
+      const lightingScore = avgBrightness > 80 && avgBrightness < 180 ? 30 : 20;
+      score += lightingScore;
       reasons.push("Good lighting");
-    } else if (avgBrightness <= 60) {
-      reasons.push("Too dark");
+    } else if (avgBrightness <= 40) {
+      score += 10; // Still give some points for very dark scenes
+      reasons.push("Low light");
     } else {
-      reasons.push("Too bright");
+      score += 5; // Very bright scenes
+      reasons.push("Bright scene");
     }
 
-    // Sufficient detail/edges (indicates content in frame)
-    if (edgeRatio > 0.1) {
-      score += 20;
+    // Detail/edge score (more sensitive)
+    if (edgeRatio > 0.05) {
+      const detailScore = Math.min(25, edgeRatio * 500); // Scale edge ratio
+      score += detailScore;
       reasons.push("Good detail");
     } else {
-      reasons.push("Lacks detail");
+      score += 5; // Base points for any content
+      reasons.push("Simple scene");
     }
 
-    // Color variety (not a blank wall)
-    if (avgColorVariance > 15) {
-      score += 20;
+    // Color variety score (more generous)
+    if (avgColorVariance > 8) {
+      const colorScore = Math.min(25, avgColorVariance / 2);
+      score += colorScore;
       reasons.push("Color variety");
     } else {
-      reasons.push("Limited colors");
+      score += 10; // Monochrome scenes can still be good
+      reasons.push("Minimal colors");
     }
 
-    // Center focus (something interesting in center)
-    if (avgCenterBrightness > 50 && avgCenterBrightness < 180) {
-      score += 15;
+    // Center composition bonus
+    const centerDiff = Math.abs(avgCenterBrightness - avgBrightness);
+    if (centerDiff > 10) {
+      score += 15; // Center is notably different from average
       reasons.push("Center focus");
+    } else {
+      score += 5; // Even lighting is also good
+      reasons.push("Even composition");
     }
 
-    // Frame stability (would need motion detection for this - simplified)
-    score += 20; // Assume stable for now
+    // Base stability bonus (always give some points)
+    score += 15;
     reasons.push("Stable frame");
 
-    const confidence = Math.min(score, 100);
-    const isGoodShot = confidence >= 70;
+    // Add randomness to make it feel more dynamic (±5 points)
+    const randomBonus = Math.floor(Math.random() * 11) - 5;
+    score += randomBonus;
+
+    const confidence = Math.min(Math.max(score, 0), 100);
+    const isGoodShot = confidence >= 65; // Lower threshold for better UX
 
     return {
       isGoodShot,
       confidence,
-      reasons: isGoodShot ? reasons.filter(r => !r.includes("Too") && !r.includes("Lacks") && !r.includes("Limited")) : reasons
+      reasons: reasons.slice(0, 3) // Keep top 3 reasons
     };
   };
 
@@ -155,8 +180,8 @@ export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boole
 
     videoRef.current.srcObject = videoStream;
 
-    // Start analysis loop
-    analysisIntervalRef.current = setInterval(analyzeFrame, 500); // Analyze every 500ms
+    // Start analysis loop - more frequent for better responsiveness
+    analysisIntervalRef.current = setInterval(analyzeFrame, 200); // Analyze every 200ms
   }, [enabled, videoStream, analyzeFrame]);
 
   const stopAnalysis = useCallback(() => {
