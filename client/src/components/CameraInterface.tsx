@@ -13,7 +13,7 @@ interface CameraInterfaceProps {
   onBack: () => void;
 }
 
-type RecordingState = 'idle' | 'finding-shot' | 'good-shot-detected' | 'countdown' | 'recording';
+type RecordingState = 'idle' | 'ready-to-lock' | 'countdown' | 'recording';
 
 export default function CameraInterface({ 
   challenge, 
@@ -30,7 +30,7 @@ export default function CameraInterface({
   
   const { stream, error: cameraError } = useCamera();
   const { startRecording, stopRecording, isRecording } = useMediaRecorder(stream);
-  const { analysisResult, isAnalyzing } = useFrameAnalysis(stream, recordingState === 'finding-shot', challenge.id);
+  // Simplified - no complex analysis needed
   
   const currentStepData = challenge.steps[currentStep];
   const maxDuration = currentStepData?.duration || 5;
@@ -77,25 +77,18 @@ export default function CameraInterface({
     }
   }, [recordingState, maxDuration]);
 
-  // Handle good shot detection
+  // Show sketch overlay when ready to lock
   useEffect(() => {
-    if (recordingState === 'finding-shot' && analysisResult.isGoodShot) {
-      setRecordingState('good-shot-detected');
+    if (recordingState === 'ready-to-lock') {
       setShowSketchOverlay(true);
-      
-      // Auto-lock after 2 seconds if user doesn't manually lock
-      const autoLockTimer = setTimeout(() => {
-        setShowSketchOverlay(false);
-        setRecordingState('countdown');
-      }, 2000);
-      
-      return () => clearTimeout(autoLockTimer);
+    } else {
+      setShowSketchOverlay(false);
     }
-  }, [recordingState, analysisResult.isGoodShot]);
+  }, [recordingState]);
 
   const handleStartRecording = () => {
     if (recordingState === 'idle') {
-      setRecordingState('finding-shot');
+      setRecordingState('ready-to-lock');
     }
   };
 
@@ -115,8 +108,8 @@ export default function CameraInterface({
   };
 
   const handleLockShot = () => {
-    setShowSketchOverlay(false);
     setRecordingState('countdown');
+    // Celebration animation will be handled by countdown overlay
   };
 
   if (cameraError) {
@@ -213,50 +206,21 @@ export default function CameraInterface({
         </div>
       )}
 
-      {/* Finding Shot Overlay */}
-      {recordingState === 'finding-shot' && (
+      {/* Ready to Lock Overlay */}
+      {recordingState === 'ready-to-lock' && (
         <div className="absolute inset-0 flex items-center justify-center z-20 px-6">
-          <div className="bg-black/70 backdrop-blur-sm rounded-3xl p-6 text-white text-center shadow-2xl animate-pulse max-w-sm">
-            <div className="text-4xl mb-3">🎯</div>
-            <h3 className="text-xl font-bold mb-2">Finding the Perfect Shot</h3>
-            <p className="text-sm opacity-90 mb-4">Move your camera around to get the best angle...</p>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
-            </div>
-            <div className="mt-3 text-xs opacity-75">
-              Shot quality: {Math.round(analysisResult.confidence)}%
-              {analysisResult.reasons.length > 0 && (
-                <div className="mt-1 text-[10px]">
-                  {analysisResult.reasons.join(" • ")}
-                </div>
-              )}
-              {analysisResult.detectedObjects && analysisResult.detectedObjects.length > 0 && (
-                <div className="mt-1 text-[10px] text-green-300">
-                  📍 Spotted: {analysisResult.detectedObjects.join(", ")}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Good Shot Detected Overlay */}
-      {recordingState === 'good-shot-detected' && (
-        <div className="absolute inset-0 flex items-center justify-center z-20 px-6">
-          <div className="bg-green-600/90 backdrop-blur-sm rounded-3xl p-6 text-white text-center shadow-2xl animate-bounce-in max-w-sm">
-            <div className="text-4xl mb-3">✨</div>
-            <h3 className="text-xl font-bold mb-2">Great Shot!</h3>
-            <p className="text-sm opacity-90 mb-4">Perfect angle detected. Lock this shot?</p>
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 backdrop-blur-sm rounded-3xl p-6 text-white text-center shadow-2xl animate-bounce-in max-w-sm">
+            <div className="text-4xl mb-3">🎬</div>
+            <h3 className="text-xl font-bold mb-2">Frame Your Shot!</h3>
+            <p className="text-sm opacity-90 mb-4">Get the perfect angle and lock when ready</p>
             <button
               onClick={handleLockShot}
-              className="bg-white text-green-600 py-3 px-6 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              className="bg-white text-green-600 py-3 px-8 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 mb-3"
             >
               🔒 Lock This Shot!
             </button>
-            <div className="mt-2 text-xs opacity-75">
-              Auto-locking in 2 seconds...
+            <div className="text-xs opacity-75">
+              Take your time to get the perfect angle
             </div>
           </div>
         </div>
@@ -265,37 +229,32 @@ export default function CameraInterface({
       {/* Bottom Controls */}
       <div className="absolute bottom-0 left-0 right-0 z-20 p-6 pb-8">
         <div className="flex items-center justify-center space-x-8">
-          <button className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-2xl">
-            📸
-          </button>
+          {/* Single Record Button */}
+          {recordingState === 'idle' && (
+            <button 
+              onClick={handleStartRecording}
+              data-testid="button-start-recording"
+              className="bg-red-500 hover:bg-red-600 text-white py-4 px-8 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            >
+              🎬 Start Recording
+            </button>
+          )}
           
-          {/* Record Button */}
-          <button 
-            onClick={handleStartRecording}
-            disabled={recordingState !== 'idle'}
-            data-testid="button-record"
-            className={`w-20 h-20 rounded-full flex items-center justify-center shadow-2xl relative transition-all duration-300 ${
-              recordingState === 'recording' 
-                ? 'bg-red-500 animate-pulse' 
-                : recordingState === 'finding-shot' || recordingState === 'good-shot-detected'
-                ? 'bg-blue-500 animate-pulse'
-                : 'bg-red-500 hover:bg-red-600 animate-pulse-glow'
-            }`}
-          >
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-              {recordingState === 'finding-shot' || recordingState === 'good-shot-detected' ? (
-                <div className="text-blue-500 text-2xl">🎯</div>
-              ) : (
-                <div className={`bg-red-500 rounded-full transition-all duration-300 ${
-                  recordingState === 'recording' ? 'w-4 h-4' : 'w-6 h-6'
-                }`}></div>
-              )}
+          {recordingState === 'recording' && (
+            <button 
+              onClick={handleStopRecording}
+              data-testid="button-stop-recording"
+              className="bg-red-600 hover:bg-red-700 text-white py-4 px-8 rounded-2xl font-bold text-lg shadow-lg animate-pulse"
+            >
+              ⏹️ Stop Recording
+            </button>
+          )}
+          
+          {(recordingState === 'ready-to-lock' || recordingState === 'countdown') && (
+            <div className="text-white text-center">
+              <div className="text-sm opacity-75">Recording will start after countdown</div>
             </div>
-          </button>
-          
-          <button className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-2xl">
-            💡
-          </button>
+          )}
         </div>
         
         {/* Timer Display */}
@@ -310,14 +269,21 @@ export default function CameraInterface({
         )}
       </div>
       
-      {/* Countdown Overlay */}
+      {/* Celebration + Countdown Overlay */}
       {recordingState === 'countdown' && (
-        <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-30">
-          <div className="text-white text-center">
-            <div className="text-8xl font-bold mb-4 animate-bounce-in" data-testid="text-countdown">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/90 to-blue-500/90 flex items-center justify-center z-30">
+          <div className="text-white text-center animate-bounce-in">
+            <div className="text-6xl mb-4 animate-bounce">✨</div>
+            <h3 className="text-2xl font-bold mb-3 animate-pulse">Great Work!</h3>
+            <p className="text-base opacity-90 mb-4">Perfect shot locked! Recording starts in...</p>
+            <div className="text-8xl font-bold mb-4 animate-bounce text-yellow-300" data-testid="text-countdown">
               {countdown}
             </div>
-            <p className="text-xl">Get ready to record!</p>
+            <div className="flex justify-center space-x-2">
+              <div className="w-3 h-3 bg-yellow-300 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+              <div className="w-3 h-3 bg-yellow-300 rounded-full animate-bounce" style={{animationDelay: '200ms'}}></div>
+              <div className="w-3 h-3 bg-yellow-300 rounded-full animate-bounce" style={{animationDelay: '400ms'}}></div>
+            </div>
           </div>
         </div>
       )}
