@@ -172,30 +172,62 @@ export default function CameraInterface({
           </div>
         </div>
         
-        {/* Horizontal Prompts Carousel - Only show during recording */}
-        {recordingState === 'recording' && (
-          <div className="bg-black/20 backdrop-blur-sm rounded-2xl p-3">
-            <div className="flex items-center space-x-3 overflow-x-auto scrollbar-hide">
-              {selectedPrompts.map((prompt, index) => (
-                <div 
-                  key={prompt.id}
-                  className={`flex-shrink-0 flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 ${
-                    index === currentPromptIndex 
-                      ? 'bg-primary text-white scale-105' 
-                      : 'bg-white/20 text-white/70'
-                  }`}
-                >
-                  <span className="text-lg">{prompt.emoji}</span>
-                  <span className="text-sm font-medium whitespace-nowrap">{prompt.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Removed horizontal carousel */}
       </div>
       
       {/* Removed obstructive center overlay */}
       
+      {/* Enhanced Prompts Section - Bigger and More Prominent */}
+      {recordingState === 'idle' && (
+        <div className="absolute top-20 left-0 right-0 bottom-32 z-20 px-4 flex items-center">
+          <div className="w-full bg-black/60 backdrop-blur-lg rounded-3xl p-6 max-h-96 overflow-y-auto scrollbar-hide border border-white/20">
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                <span className="text-2xl">📋</span>
+              </div>
+              <h3 className="text-white font-bold text-xl mb-2">Your Recording Guide</h3>
+              <p className="text-white/80 text-sm">We'll guide you through these prompts during recording</p>
+            </div>
+            
+            <div className="space-y-4">
+              {selectedPrompts.map((prompt, index) => (
+                <div 
+                  key={prompt.id}
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20"
+                >
+                  <div className="flex items-start space-x-4">
+                    <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-2xl">{prompt.emoji}</span>
+                        <span className="text-white font-semibold text-base">{prompt.text}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60 text-sm">Duration: {prompt.duration} seconds</span>
+                        <span className="text-primary font-semibold text-sm">+{challenge.pointsPerStep} pts</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-6 text-center">
+              <div className="bg-white/10 rounded-2xl p-4">
+                <div className="text-white font-semibold text-lg">
+                  Total Recording Time: {Math.floor(totalDuration / 60)}:{(totalDuration % 60).toString().padStart(2, '0')}
+                </div>
+                <div className="text-white/80 text-sm mt-1">
+                  Total Points: ⭐ {challenge.pointsPerStep * selectedPrompts.length}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Controls - Clean and Simple */}
       <div className="absolute bottom-0 left-0 right-0 z-20 p-6 pb-8">
         <div className="flex items-center justify-center">
@@ -203,7 +235,7 @@ export default function CameraInterface({
             <button 
               onClick={handleStartRecording}
               data-testid="button-start-recording"
-              className="bg-red-500 hover:bg-red-600 text-white py-4 px-8 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              className="border-3 border-red-500 text-red-500 hover:bg-red-500 hover:text-white py-4 px-8 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
             >
               🎬 Start Recording
             </button>
@@ -213,7 +245,7 @@ export default function CameraInterface({
             <button 
               onClick={handleStopRecording}
               data-testid="button-stop-recording"
-              className="bg-red-600 hover:bg-red-700 text-white py-4 px-8 rounded-full font-bold text-lg shadow-lg animate-pulse"
+              className="bg-red-600 hover:bg-red-700 text-white py-4 px-8 rounded-full font-bold text-lg shadow-lg animate-pulse border-3 border-red-600"
             >
               ⏹️ Stop Recording
             </button>

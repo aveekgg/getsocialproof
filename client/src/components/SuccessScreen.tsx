@@ -56,14 +56,14 @@ export default function SuccessScreen({
           <button 
             onClick={onShare}
             data-testid="button-share-video"
-            className="w-full bg-white text-accent py-3 px-6 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            className="w-full border-2 border-white text-white hover:bg-white hover:text-accent py-3 px-6 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
           >
             📤 Share My Reel
           </button>
           <button 
             onClick={onStartNew}
             data-testid="button-new-challenge"
-            className="w-full bg-white/20 backdrop-blur-sm text-white py-3 px-6 rounded-2xl font-semibold border-2 border-white/30 hover:bg-white/30 transform hover:scale-105 transition-all duration-300"
+            className="w-full border-2 border-white/60 text-white/90 hover:bg-white/20 hover:text-white py-3 px-6 rounded-2xl font-semibold transform hover:scale-105 transition-all duration-300"
           >
             🎬 Try Another Challenge
           </button>

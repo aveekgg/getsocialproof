@@ -121,7 +121,7 @@ export default function FinalReview({ challenge, selectedPrompts, completedClips
           <button 
             onClick={handlePlayPreview}
             data-testid="button-preview"
-            className="w-full bg-gray-100 text-gray-800 py-3 px-6 rounded-2xl font-semibold border-2 border-gray-200 hover:bg-gray-200 transition-all duration-300"
+            className="w-full border-2 border-gray-400 text-gray-600 hover:bg-gray-400 hover:text-white py-3 px-6 rounded-2xl font-semibold transition-all duration-300"
           >
             👁️ Preview
           </button>
@@ -130,7 +130,7 @@ export default function FinalReview({ challenge, selectedPrompts, completedClips
             onClick={() => submitMutation.mutate()}
             disabled={submitMutation.isPending}
             data-testid="button-submit-video"
-            className="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
+            className="w-full border-3 border-primary text-primary hover:bg-primary hover:text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none disabled:hover:bg-transparent disabled:hover:text-primary"
           >
             {submitMutation.isPending ? '🎯 Submitting...' : '🎯 Submit & Spin'}
           </button>

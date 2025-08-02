@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ChallengeGallery from "@/components/ChallengeGallery";
-import ChallengeSetup from "@/components/ChallengeSetup";
 import CameraInterface from "@/components/CameraInterface";
 import RecordingComplete from "@/components/RecordingComplete";
 import FinalReview from "@/components/FinalReview";
 import RewardWheel from "@/components/RewardWheel";
 import SuccessScreen from "@/components/SuccessScreen";
+import Login from "@/components/Login";
+import Navbar from "@/components/Navbar";
 import type { Challenge, VideoClip, ChallengePrompt } from "@shared/schema";
 
-type Screen = 'gallery' | 'setup' | 'camera' | 'complete' | 'review' | 'reward' | 'success';
+type Screen = 'login' | 'gallery' | 'camera' | 'complete' | 'review' | 'reward' | 'success';
 
 export default function RoomReelChallenge() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('gallery');
+  const [user, setUser] = useState<{ username: string; email: string } | null>(null);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [selectedPrompts, setSelectedPrompts] = useState<ChallengePrompt[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
@@ -22,7 +24,30 @@ export default function RoomReelChallenge() {
 
   const { data: challenges = [] } = useQuery<Challenge[]>({
     queryKey: ['/api/challenges'],
+    // Always fetch challenges - no login required to browse
   });
+
+  const handleLogin = (userData: { username: string; email: string }) => {
+    setUser(userData);
+    // After login, go to camera if a challenge was selected, otherwise go to gallery
+    if (selectedChallenge) {
+      setCurrentScreen('camera');
+    } else {
+      setCurrentScreen('gallery');
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentScreen('gallery'); // Always go back to home page
+    // Reset all state
+    setSelectedChallenge(null);
+    setSelectedPrompts([]);
+    setCurrentStep(0);
+    setCompletedClips([]);
+    setTotalPoints(0);
+    setSubmissionId(null);
+  };
 
   const handleChallengeSelect = (challengeId: string) => {
     const challenge = challenges.find(c => c.id === challengeId);
@@ -37,7 +62,13 @@ export default function RoomReelChallenge() {
         { id: "chill-zone", text: "Your chill-out zone", emoji: "🧘", duration: 5 }
       ];
       setSelectedPrompts(challenge.promptPool && challenge.promptPool.length > 0 ? challenge.promptPool : fallbackPrompts);
-      setCurrentScreen('setup');
+      
+      // Check if user is logged in before starting challenge
+      if (!user) {
+        setCurrentScreen('login');
+      } else {
+        setCurrentScreen('camera');
+      }
     }
   };
 
@@ -86,28 +117,27 @@ export default function RoomReelChallenge() {
 
   const commonProps = {
     onBack: () => {
-      if (currentScreen === 'setup') setCurrentScreen('gallery');
-      else if (currentScreen === 'camera') setCurrentScreen('setup');
+      if (currentScreen === 'camera') setCurrentScreen('gallery');
     }
   };
 
-  switch (currentScreen) {
-    case 'gallery':
-      return (
-        <ChallengeGallery
-          challenges={challenges}
-          onChallengeSelect={handleChallengeSelect}
-        />
-      );
-    
-    case 'setup':
-      return (
-        <ChallengeSetup
-          challenge={selectedChallenge!}
-          onStartChallenge={handleStartChallenge}
-          {...commonProps}
-        />
-      );
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Only show navbar when user is logged in */}
+      {user && <Navbar user={user} onLogout={handleLogout} />}
+      
+      <div className="min-h-screen">
+        {(() => {
+          switch (currentScreen) {
+            case 'gallery':
+              return (
+                <ChallengeGallery
+                  challenges={challenges}
+                  onChallengeSelect={handleChallengeSelect}
+                />
+              );
+            
+            // Removed redundant setup screen
     
     case 'camera':
       return (
@@ -174,7 +204,16 @@ export default function RoomReelChallenge() {
         />
       );
     
-    default:
-      return <ChallengeGallery challenges={challenges} onChallengeSelect={handleChallengeSelect} />;
-  }
+            default:
+              return <ChallengeGallery challenges={challenges} onChallengeSelect={handleChallengeSelect} />;
+          }
+        })()}
+      </div>
+      
+      {/* Login Modal Overlay */}
+      {currentScreen === 'login' && (
+        <Login onLogin={handleLogin} selectedChallenge={selectedChallenge} />
+      )}
+    </div>
+  );
 }

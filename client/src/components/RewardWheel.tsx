@@ -55,7 +55,7 @@ export default function RewardWheel({ submissionId, onFinish }: RewardWheelProps
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
       {/* Confetti Animation */}
       <div className="absolute inset-0 pointer-events-none z-10">
         {confettiElements}
@@ -64,55 +64,45 @@ export default function RewardWheel({ submissionId, onFinish }: RewardWheelProps
       <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-6 text-center">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold">🎯</span>
-            </div>
-            <span className="text-yellow-500 font-bold">15,45,138</span>
-            <div className="w-8 h-8 bg-purple-500 rounded flex items-center justify-center">
-              <span className="text-white text-xs">30</span>
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-white mb-2">🌡️ Spin to Win!</h1>
-          <p className="text-gray-300 text-sm">You completed your challenge — here's your reward!</p>
+          <h1 className="text-3xl font-bold text-white mb-2">🌀 Nice one! Your reel is live.</h1>
+          <p className="text-xl text-white/90 mb-4">Now let's get you a surprise!</p>
+          <p className="text-lg text-white/80">🎯 Spin the wheel to unlock a student perk 🎁</p>
         </div>
         
         {/* Modern Wheel Design */}
         <div className="relative mb-8">
-          {/* Wheel Stand */}
-          <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-gray-700 rounded-full"></div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-4 bg-gray-600 rounded-full"></div>
-          
-          {/* Wheel Frame */}
+          {/* Wheel with glassmorphism effect */}
           <div className="relative">
-            <div className="w-80 h-80 rounded-full bg-gray-800 p-4 shadow-2xl">
+            <div className="w-80 h-80 rounded-full bg-white/10 backdrop-blur-lg p-2 shadow-2xl border border-white/20">
               <div 
-                className="w-full h-full rounded-full relative overflow-hidden transition-transform duration-[3s] ease-out border-4 border-gray-700"
+                className="w-full h-full rounded-full relative overflow-hidden transition-transform duration-[3s] ease-out"
                 style={{ transform: `rotate(${rotation}deg)` }}
               >
-                {/* Wheel Sections */}
+                {/* Wheel Sections with better visibility */}
                 {rewards.map((reward, index) => {
                   const angle = (360 / rewards.length) * index;
-                  const nextAngle = (360 / rewards.length) * (index + 1);
+                  const sectionAngle = 360 / rewards.length;
                   
                   return (
                     <div
                       key={index}
-                      className="absolute inset-0 flex items-center justify-center"
+                      className="absolute inset-0"
                       style={{
-                        background: `conic-gradient(from ${angle}deg, ${reward.color} ${angle}deg, ${reward.color} ${nextAngle}deg, transparent ${nextAngle}deg)`,
-                        clipPath: `polygon(50% 50%, ${50 + 40 * Math.cos((angle - 90) * Math.PI / 180)}% ${50 + 40 * Math.sin((angle - 90) * Math.PI / 180)}%, ${50 + 40 * Math.cos((nextAngle - 90) * Math.PI / 180)}% ${50 + 40 * Math.sin((nextAngle - 90) * Math.PI / 180)}%)`
+                        background: reward.color,
+                        clipPath: `polygon(50% 50%, ${50 + 45 * Math.cos((angle - 90) * Math.PI / 180)}% ${50 + 45 * Math.sin((angle - 90) * Math.PI / 180)}%, ${50 + 45 * Math.cos((angle + sectionAngle - 90) * Math.PI / 180)}% ${50 + 45 * Math.sin((angle + sectionAngle - 90) * Math.PI / 180)}%)`
                       }}
                     >
                       <div 
-                        className="absolute text-white font-bold text-center"
+                        className="absolute inset-0 flex items-center justify-center"
                         style={{
-                          transform: `rotate(${angle + (360 / rewards.length) / 2}deg) translateY(-120px)`,
-                          transformOrigin: 'center'
+                          transform: `rotate(${angle + sectionAngle / 2}deg)`,
+                          transformOrigin: '50% 50%'
                         }}
                       >
-                        <div className="text-2xl mb-1">{reward.emoji}</div>
-                        <div className="text-xs">{reward.text}</div>
+                        <div className="text-center" style={{ transform: 'translateY(-100px)' }}>
+                          <div className="text-4xl mb-1">{reward.emoji}</div>
+                          <div className="text-xs font-bold text-white">{reward.text}</div>
+                        </div>
                       </div>
                     </div>
                   );
@@ -120,54 +110,68 @@ export default function RewardWheel({ submissionId, onFinish }: RewardWheelProps
                 
                 {/* Center Hub */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center border-4 border-gray-300">
-                    <span className="text-2xl">🎯</span>
+                  <div className="w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center border-4 border-gray-200">
+                    <span className="text-3xl">🎯</span>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* Pointer */}
-            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
-              <div className="w-0 h-0 border-l-6 border-r-6 border-b-12 border-l-transparent border-r-transparent border-b-white shadow-lg"></div>
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 z-10">
+              <div className="w-0 h-0 border-l-8 border-r-8 border-b-16 border-l-transparent border-r-transparent border-b-white shadow-lg"></div>
             </div>
           </div>
         </div>
         
-        {/* Prize Info */}
-        <div className="text-center mb-6">
-          <div className="text-gray-400 text-sm mb-2">💡 details</div>
-          <div className="text-white font-bold">spin for 💰 3,000</div>
-        </div>
-        
-        {!showResult ? (
+        <div className="w-full max-w-sm">
           <button 
             onClick={handleSpin}
             disabled={isSpinning}
             data-testid="button-spin-wheel"
-            className="w-full max-w-xs bg-yellow-500 hover:bg-yellow-600 text-black py-4 px-8 rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
+            className="w-full border-3 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black py-6 px-8 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:transform-none disabled:hover:bg-transparent disabled:hover:text-yellow-400"
           >
-            {isSpinning ? 'Spinning...' : 'Spin'}
+            {isSpinning ? '🎯 Spinning...' : '🎉 Spin Now'}
           </button>
-        ) : (
-          /* Reward Result */
-          <div className="w-full max-w-xs bg-gray-800 rounded-2xl p-6 animate-bounce-in">
-            <div className="text-4xl mb-2">🎉</div>
-            <h3 className="text-xl font-bold text-white mb-2">You Won!</h3>
-            <div className="text-lg font-semibold text-yellow-500 mb-2" data-testid="text-reward-value">
-              {reward?.rewardValue || 'Starbucks ☕'}
-            </div>
-            <p className="text-gray-400 text-sm mb-4">Your reward code will be sent to your email!</p>
-            <button 
-              onClick={onFinish}
-              data-testid="button-claim-reward"
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-black py-3 px-6 rounded-xl font-semibold transition-colors"
-            >
-              Awesome! 🙌
-            </button>
-          </div>
-        )}
+        </div>
       </div>
+
+      {/* Overlay Results Card */}
+      {showResult && (
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+          <div className="w-full max-w-sm bg-white/95 backdrop-blur-lg rounded-3xl p-8 animate-bounce-in border border-white/20 shadow-2xl">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🎊</div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">You got a {reward?.rewardValue || 'Starbucks ☕'}!</h3>
+              <p className="text-gray-600 text-sm mb-6">Check your inbox or rewards section to claim it.</p>
+              
+              <div className="space-y-3">
+                <button 
+                  onClick={onFinish}
+                  data-testid="button-claim-reward"
+                  className="w-full border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300"
+                >
+                  Try Another Challenge
+                </button>
+                <button 
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Check out my RoomReel!',
+                        text: 'I just won a reward with RoomReel Challenge!',
+                        url: window.location.href
+                      });
+                    }
+                  }}
+                  className="w-full border-2 border-gray-400 text-gray-600 hover:bg-gray-400 hover:text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300"
+                >
+                  📲 Share My Reel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -57,14 +57,14 @@ export default function RecordingComplete({
             <button 
               onClick={onRetake}
               data-testid="button-retake"
-              className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+              className="flex-1 border-2 border-gray-400 text-gray-600 hover:bg-gray-400 hover:text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300"
             >
               🔄 Retake
             </button>
             <button 
               onClick={onContinue}
               data-testid="button-keep"
-              className="flex-1 bg-primary text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+              className="flex-1 border-2 border-primary text-primary hover:bg-primary hover:text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300"
             >
               ✓ Keep This
             </button>
@@ -88,7 +88,7 @@ export default function RecordingComplete({
           <button 
             onClick={onContinue}
             data-testid="button-continue"
-            className="w-full bg-primary text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="w-full border-3 border-primary text-primary hover:bg-primary hover:text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
           >
             {isLastStep ? 'Review Final Video →' : 'Continue Recording →'}
           </button>
