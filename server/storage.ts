@@ -34,6 +34,13 @@ export class MemStorage implements IStorage {
   }
 
   private initializeChallenges() {
+    const today = new Date();
+    const getUnlockDate = (dayOffset: number) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() + dayOffset);
+      return date;
+    };
+
     const roomTourSteps: ChallengeStep[] = [
       { id: 1, title: "Your bedroom vibe", description: "Give us the full tour of where you sleep and chill", emoji: "🛏️", duration: 6 },
       { id: 2, title: "Study setup reveal", description: "Show off your workspace - messy or clean, we love it all", emoji: "💻", duration: 5 },
@@ -50,26 +57,86 @@ export class MemStorage implements IStorage {
       { id: 5, title: "Night mode", description: "How you unwind - Netflix, gaming, or early bedtime?", emoji: "🌙", duration: 5 }
     ];
 
-    const roomTourChallenge: Challenge = {
-      id: "room-tour",
-      name: "Room Tour Challenge",
-      description: "Give us the honest tour of your uni accommodation and win some proper rewards!",
-      steps: roomTourSteps,
-      pointsPerStep: 25,
-      createdAt: new Date()
-    };
+    const studySpaceSteps: ChallengeStep[] = [
+      { id: 1, title: "Your study sanctuary", description: "Show us your main study spot", emoji: "📖", duration: 5 },
+      { id: 2, title: "Study snacks reveal", description: "What fuels your study sessions?", emoji: "🍿", duration: 4 },
+      { id: 3, title: "Organization game", description: "How do you keep things organized (or not)?", emoji: "📝", duration: 5 },
+      { id: 4, title: "Productivity tools", description: "Apps, planners, or just pure chaos?", emoji: "⚡", duration: 4 },
+      { id: 5, title: "Study playlist", description: "What gets you in the zone?", emoji: "🎧", duration: 3 }
+    ];
 
-    const dayInLifeChallenge: Challenge = {
-      id: "day-in-life",
-      name: "A Day in My Uni Life",
-      description: "Show us what a real day looks like as a UK student - the good, bad, and caffeinated!",
-      steps: dayInLifeSteps,
-      pointsPerStep: 25,
-      createdAt: new Date()
-    };
+    const uniLifeSteps: ChallengeStep[] = [
+      { id: 1, title: "Campus highlights", description: "Show us your favourite spots on campus", emoji: "🏫", duration: 6 },
+      { id: 2, title: "Lecture hall vibes", description: "Where the magic (or boredom) happens", emoji: "🎓", duration: 5 },
+      { id: 3, title: "Library life", description: "Your go-to study spaces and secret spots", emoji: "📚", duration: 5 },
+      { id: 4, title: "Social societies", description: "Clubs, societies, or just hanging out", emoji: "🎉", duration: 6 },
+      { id: 5, title: "Campus food tour", description: "Best (and worst) places to grab a bite", emoji: "🍔", duration: 5 }
+    ];
 
-    this.challenges.set(roomTourChallenge.id, roomTourChallenge);
-    this.challenges.set(dayInLifeChallenge.id, dayInLifeChallenge);
+    const friendsSteps: ChallengeStep[] = [
+      { id: 1, title: "Squad introduction", description: "Introduce us to your uni crew", emoji: "👥", duration: 6 },
+      { id: 2, title: "Flat/house mates", description: "The people you live with (chaos included)", emoji: "🏠", duration: 5 },
+      { id: 3, title: "Study buddies", description: "Who keeps you motivated (or distracted)?", emoji: "📖", duration: 5 },
+      { id: 4, title: "Weekend plans", description: "How you and your mates unwind", emoji: "🎊", duration: 6 },
+      { id: 5, title: "Group dynamics", description: "The funny moments and inside jokes", emoji: "😂", duration: 5 }
+    ];
+
+    const challenges = [
+      {
+        id: "room-tour",
+        name: "Room Tour Challenge",
+        description: "Give us the honest tour of your uni accommodation!",
+        steps: roomTourSteps,
+        pointsPerStep: 25,
+        dayNumber: 1,
+        unlockDate: getUnlockDate(0),
+        createdAt: new Date()
+      },
+      {
+        id: "day-in-life",
+        name: "A Day in My Uni Life",
+        description: "Show us what a real day looks like as a UK student!",
+        steps: dayInLifeSteps,
+        pointsPerStep: 25,
+        dayNumber: 2,
+        unlockDate: getUnlockDate(1),
+        createdAt: new Date()
+      },
+      {
+        id: "study-space",
+        name: "Study Space Secrets",
+        description: "Reveal your study setup and productivity hacks!",
+        steps: studySpaceSteps,
+        pointsPerStep: 30,
+        dayNumber: 3,
+        unlockDate: getUnlockDate(2),
+        createdAt: new Date()
+      },
+      {
+        id: "uni-life",
+        name: "Campus Life Tour",
+        description: "Take us around your university campus!",
+        steps: uniLifeSteps,
+        pointsPerStep: 35,
+        dayNumber: 4,
+        unlockDate: getUnlockDate(3),
+        createdAt: new Date()
+      },
+      {
+        id: "friends-social",
+        name: "Friends & Social Life",
+        description: "Show us your uni social circle and good times!",
+        steps: friendsSteps,
+        pointsPerStep: 40,
+        dayNumber: 5,
+        unlockDate: getUnlockDate(4),
+        createdAt: new Date()
+      }
+    ];
+
+    challenges.forEach(challenge => {
+      this.challenges.set(challenge.id, challenge as Challenge);
+    });
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -103,7 +170,7 @@ export class MemStorage implements IStorage {
       ...insertChallenge, 
       id, 
       createdAt: new Date() 
-    };
+    } as Challenge;
     this.challenges.set(id, challenge);
     return challenge;
   }
@@ -118,7 +185,7 @@ export class MemStorage implements IStorage {
       ...insertSubmission, 
       id, 
       completedAt: new Date() 
-    };
+    } as Submission;
     this.submissions.set(id, submission);
     return submission;
   }
@@ -129,7 +196,7 @@ export class MemStorage implements IStorage {
       ...insertReward, 
       id, 
       createdAt: new Date() 
-    };
+    } as Reward;
     this.rewards.set(id, reward);
     return reward;
   }

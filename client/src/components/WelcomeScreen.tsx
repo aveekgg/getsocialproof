@@ -1,4 +1,5 @@
 import { Challenge } from "@shared/schema";
+import ChallengeTimeline from "./ChallengeTimeline";
 
 interface WelcomeScreenProps {
   challenges: Challenge[];
@@ -54,32 +55,27 @@ export default function WelcomeScreen({ challenges, onChallengeSelect }: Welcome
           </div>
         </div>
 
-        <div className="w-full max-w-sm space-y-4 animate-fade-in-up">
-          {challenges.map((challenge, index) => (
-            <button
-              key={challenge.id}
-              onClick={() => onChallengeSelect(challenge.id)}
-              data-testid={`button-challenge-${challenge.id}`}
-              className={`w-full py-4 px-6 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ${
-                index === 0 
-                  ? 'bg-white text-primary' 
-                  : 'bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/30'
-              }`}
-            >
-              {challenge.id === 'room-tour' ? '🏠' : '📱'} {challenge.name}
-            </button>
-          ))}
+        <div className="animate-fade-in-up">
+          <ChallengeTimeline 
+            challenges={challenges} 
+            onChallengeSelect={onChallengeSelect} 
+          />
         </div>
         
-        <div className="mt-8 flex items-center space-x-4 opacity-80">
+        <div className="mt-6 flex items-center space-x-4 opacity-80">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">⚡</span>
-            <span className="text-sm">2-5 mins each</span>
+            <span className="text-2xl">📅</span>
+            <span className="text-sm">5 days</span>
           </div>
           <div className="w-1 h-1 bg-white rounded-full"></div>
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">🎲</span>
-            <span className="text-sm">Random rewards</span>
+            <span className="text-2xl">🎁</span>
+            <span className="text-sm">Daily rewards</span>
+          </div>
+          <div className="w-1 h-1 bg-white rounded-full"></div>
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl">⭐</span>
+            <span className="text-sm">More points</span>
           </div>
         </div>
       </div>

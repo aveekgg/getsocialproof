@@ -1,6 +1,6 @@
 # Overview
 
-RoomReel Challenge is a mobile-first React web application that allows students to record guided video content about their housing experience. The app gamifies content creation through step-by-step challenges, rewarding users with points and prizes for completing video recording tasks. Students can select from predefined challenges (like room tours or day-in-life documentation), record multiple short video clips following prompts, and receive randomized rewards upon completion.
+RoomReel Challenge is a mobile-first React web application that allows students to record guided video content about their housing experience. The app gamifies content creation through a 5-day challenge timeline system, where new challenges unlock daily. Students record multiple short video clips following prompts and receive randomized rewards with varying rarity levels upon completion. The timeline creates urgency and engagement by spreading challenges across 5 days with increasing point values.
 
 # User Preferences
 
@@ -44,9 +44,10 @@ Content tone: Authentic, relatable, using British English and student-friendly l
 - **Session Management**: Prepared for user authentication with session storage configuration
 
 ## Data Models
-- **Challenges**: Structured as multi-step processes with defined prompts, durations, and point values
+- **Challenges**: Structured as multi-step processes with defined prompts, durations, point values, and timeline positioning (day 1-5)
+- **Timeline System**: 5-day challenge schedule with unlock dates and progressive point increases (25→40 points per step)
 - **Video Clips**: Metadata tracking for recorded segments without actual video storage
-- **Rewards System**: Randomized prize generation with different reward types (gift cards, subscriptions, cash)
+- **Rewards System**: Weighted randomized prize generation (common 70%, rare 25%, epic 5%) with UK-relevant rewards
 - **User Submissions**: Links user attempts to completed challenges with point tracking
 
 # External Dependencies
