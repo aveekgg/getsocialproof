@@ -4,9 +4,17 @@ interface FrameAnalysisResult {
   isGoodShot: boolean;
   confidence: number;
   reasons: string[];
+  detectedObjects?: string[];
 }
 
-export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boolean = true) {
+interface ObjectDetectionPattern {
+  name: string;
+  colorRange: { r: [number, number], g: [number, number], b: [number, number] };
+  edgePattern: number;
+  brightness: [number, number];
+}
+
+export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boolean = true, challengeType?: string) {
   const [analysisResult, setAnalysisResult] = useState<FrameAnalysisResult>({
     isGoodShot: false,
     confidence: 0,
@@ -40,6 +48,94 @@ export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boole
     const analysis = performFrameAnalysis(pixels, canvas.width, canvas.height);
     setAnalysisResult(analysis);
   }, [videoStream]);
+
+  // Object detection patterns for different room elements
+  const objectPatterns: Record<string, ObjectDetectionPattern[]> = {
+    'room-tour': [
+      { name: 'bed', colorRange: { r: [200, 255], g: [200, 255], b: [200, 255] }, edgePattern: 0.3, brightness: [80, 200] },
+      { name: 'pillow', colorRange: { r: [180, 255], g: [180, 255], b: [180, 255] }, edgePattern: 0.2, brightness: [100, 220] },
+      { name: 'desk', colorRange: { r: [80, 160], g: [60, 140], b: [40, 120] }, edgePattern: 0.4, brightness: [60, 180] },
+      { name: 'wardrobe', colorRange: { r: [40, 120], g: [40, 120], b: [40, 120] }, edgePattern: 0.5, brightness: [50, 150] }
+    ],
+    'study-space': [
+      { name: 'books', colorRange: { r: [40, 200], g: [40, 200], b: [40, 200] }, edgePattern: 0.6, brightness: [70, 190] },
+      { name: 'laptop', colorRange: { r: [30, 80], g: [30, 80], b: [30, 80] }, edgePattern: 0.4, brightness: [40, 120] },
+      { name: 'desk', colorRange: { r: [80, 160], g: [60, 140], b: [40, 120] }, edgePattern: 0.4, brightness: [60, 180] },
+      { name: 'papers', colorRange: { r: [220, 255], g: [220, 255], b: [220, 255] }, edgePattern: 0.3, brightness: [180, 250] }
+    ],
+    'social-life': [
+      { name: 'people', colorRange: { r: [120, 220], g: [100, 200], b: [80, 180] }, edgePattern: 0.4, brightness: [80, 200] },
+      { name: 'food', colorRange: { r: [150, 255], g: [100, 220], b: [50, 180] }, edgePattern: 0.3, brightness: [100, 220] }
+    ]
+  };
+
+  const detectObjects = (pixels: Uint8ClampedArray, width: number, height: number): string[] => {
+    if (!challengeType || !objectPatterns[challengeType]) return [];
+    
+    const patterns = objectPatterns[challengeType];
+    const detectedObjects: string[] = [];
+    const regionSize = Math.floor(Math.min(width, height) / 8);
+    
+    // Analyze different regions of the image
+    for (let regionY = 0; regionY < height; regionY += regionSize) {
+      for (let regionX = 0; regionX < width; regionX += regionSize) {
+        const regionEndX = Math.min(regionX + regionSize, width);
+        const regionEndY = Math.min(regionY + regionSize, height);
+        
+        for (const pattern of patterns) {
+          if (detectedObjects.includes(pattern.name)) continue;
+          
+          let matchScore = 0;
+          let pixelCount = 0;
+          let edgeCount = 0;
+          
+          for (let y = regionY; y < regionEndY; y += 2) {
+            for (let x = regionX; x < regionEndX; x += 2) {
+              const i = (y * width + x) * 4;
+              if (i >= pixels.length) continue;
+              
+              const r = pixels[i];
+              const g = pixels[i + 1];
+              const b = pixels[i + 2];
+              const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+              
+              pixelCount++;
+              
+              // Check if pixel matches pattern
+              const colorMatch = 
+                r >= pattern.colorRange.r[0] && r <= pattern.colorRange.r[1] &&
+                g >= pattern.colorRange.g[0] && g <= pattern.colorRange.g[1] &&
+                b >= pattern.colorRange.b[0] && b <= pattern.colorRange.b[1] &&
+                brightness >= pattern.brightness[0] && brightness <= pattern.brightness[1];
+              
+              if (colorMatch) matchScore++;
+              
+              // Check for edges (simplified)
+              if (x < regionEndX - 2 && y < regionEndY - 2) {
+                const nextI = ((y + 1) * width + (x + 1)) * 4;
+                if (nextI < pixels.length) {
+                  const nextBrightness = 0.299 * pixels[nextI] + 0.587 * pixels[nextI + 1] + 0.114 * pixels[nextI + 2];
+                  if (Math.abs(brightness - nextBrightness) > 40) {
+                    edgeCount++;
+                  }
+                }
+              }
+            }
+          }
+          
+          const colorMatchRatio = matchScore / pixelCount;
+          const edgeRatio = edgeCount / pixelCount;
+          
+          // Object detected if sufficient color match and edge pattern
+          if (colorMatchRatio > 0.3 && edgeRatio > pattern.edgePattern * 0.5) {
+            detectedObjects.push(pattern.name);
+          }
+        }
+      }
+    }
+    
+    return detectedObjects;
+  };
 
   const performFrameAnalysis = (pixels: Uint8ClampedArray, width: number, height: number): FrameAnalysisResult => {
     let totalBrightness = 0;
@@ -146,6 +242,13 @@ export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boole
     score += 15;
     reasons.push("Stable frame");
 
+    // Object detection bonus
+    const detectedObjects = detectObjects(pixels, width, height);
+    if (detectedObjects.length > 0) {
+      score += 15 * detectedObjects.length; // Bonus for relevant objects
+      reasons.push(`Found ${detectedObjects.join(', ')}`);
+    }
+
     // Add randomness to make it feel more dynamic (±5 points)
     const randomBonus = Math.floor(Math.random() * 11) - 5;
     score += randomBonus;
@@ -156,7 +259,8 @@ export function useFrameAnalysis(videoStream: MediaStream | null, enabled: boole
     return {
       isGoodShot,
       confidence,
-      reasons: reasons.slice(0, 3) // Keep top 3 reasons
+      reasons: reasons.slice(0, 3), // Keep top 3 reasons
+      detectedObjects
     };
   };
 

@@ -30,7 +30,7 @@ export default function CameraInterface({
   
   const { stream, error: cameraError } = useCamera();
   const { startRecording, stopRecording, isRecording } = useMediaRecorder(stream);
-  const { analysisResult, isAnalyzing } = useFrameAnalysis(stream, recordingState === 'finding-shot');
+  const { analysisResult, isAnalyzing } = useFrameAnalysis(stream, recordingState === 'finding-shot', challenge.id);
   
   const currentStepData = challenge.steps[currentStep];
   const maxDuration = currentStepData?.duration || 5;
@@ -230,6 +230,11 @@ export default function CameraInterface({
               {analysisResult.reasons.length > 0 && (
                 <div className="mt-1 text-[10px]">
                   {analysisResult.reasons.join(" • ")}
+                </div>
+              )}
+              {analysisResult.detectedObjects && analysisResult.detectedObjects.length > 0 && (
+                <div className="mt-1 text-[10px] text-green-300">
+                  📍 Spotted: {analysisResult.detectedObjects.join(", ")}
                 </div>
               )}
             </div>
