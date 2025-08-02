@@ -15,6 +15,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get rewards preview for homepage
+  app.get("/api/rewards/preview", async (_req, res) => {
+    try {
+      const rewardPreviews = [
+        { icon: "☕", name: "Costa Cards", rarity: "common" },
+        { icon: "🎵", name: "Spotify Premium", rarity: "rare" },
+        { icon: "🍕", name: "Food Vouchers", rarity: "common" },
+        { icon: "💰", name: "PayPal Cash", rarity: "epic" },
+        { icon: "🛍️", name: "ASOS Vouchers", rarity: "epic" },
+        { icon: "🎮", name: "Gaming Credit", rarity: "rare" }
+      ];
+      res.json(rewardPreviews);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch reward previews" });
+    }
+  });
+
   // Get specific challenge
   app.get("/api/challenges/:id", async (req, res) => {
     try {
@@ -34,24 +51,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertSubmissionSchema.parse(req.body);
       const submission = await storage.createSubmission(validatedData);
       
-      // Generate random reward
+      // Generate random reward with weighted distribution
       const rewards = [
-        { type: "gift-card", value: "£5 Costa Coffee Card" },
-        { type: "subscription", value: "Spotify Premium (3 Months)" },
-        { type: "voucher", value: "£10 Domino's Voucher" },
-        { type: "subscription", value: "Netflix (1 Month)" },
-        { type: "credit", value: "£15 Amazon Voucher" },
-        { type: "bundle", value: "Study Essentials Kit" },
-        { type: "cash", value: "£20 PayPal Credit" },
-        { type: "mystery", value: "Surprise Student Bundle" }
+        // Common rewards (70% chance)
+        { type: "gift-card", value: "£3 Costa Coffee", weight: 15 },
+        { type: "voucher", value: "£5 Subway Voucher", weight: 15 },
+        { type: "credit", value: "£5 Amazon Credit", weight: 15 },
+        { type: "voucher", value: "Free McDonald's Meal", weight: 10 },
+        { type: "gift-card", value: "£4 Greggs Card", weight: 10 },
+        { type: "bundle", value: "Study Snacks Box", weight: 5 },
+        
+        // Rare rewards (25% chance)
+        { type: "subscription", value: "Spotify Premium (3 Months)", weight: 8 },
+        { type: "voucher", value: "£15 Domino's Voucher", weight: 7 },
+        { type: "subscription", value: "Netflix (1 Month)", weight: 5 },
+        { type: "credit", value: "£20 Amazon Voucher", weight: 5 },
+        
+        // Epic rewards (5% chance)
+        { type: "cash", value: "£50 PayPal Cash", weight: 2 },
+        { type: "voucher", value: "£100 ASOS Voucher", weight: 2 },
+        { type: "mystery", value: "Epic Student Bundle", weight: 1 }
       ];
       
-      const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+      // Weighted random selection
+      const totalWeight = rewards.reduce((sum, reward) => sum + reward.weight, 0);
+      let random = Math.random() * totalWeight;
+      let selectedReward = rewards[0];
+      
+      for (const reward of rewards) {
+        random -= reward.weight;
+        if (random <= 0) {
+          selectedReward = reward;
+          break;
+        }
+      }
       
       const reward = await storage.createReward({
         submissionId: submission.id,
-        rewardType: randomReward.type,
-        rewardValue: randomReward.value,
+        rewardType: selectedReward.type,
+        rewardValue: selectedReward.value,
         claimed: 0
       });
       

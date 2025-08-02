@@ -24,6 +24,36 @@ export default function WelcomeScreen({ challenges, onChallengeSelect }: Welcome
           <p className="text-lg opacity-90 mb-8 max-w-sm">Share your real uni life, help other students, and win some brilliant rewards!</p>
         </div>
         
+        {/* Rewards Preview */}
+        <div className="w-full max-w-sm mb-6 animate-fade-in-up">
+          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+            <div className="flex items-center justify-center mb-3">
+              <span className="text-lg font-semibold">🎁 What's Up for Grabs?</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="bg-white/10 rounded-lg p-2 text-center">
+                <div className="text-lg mb-1">☕</div>
+                <div className="text-xs">Costa Cards</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-2 text-center">
+                <div className="text-lg mb-1">🎵</div>
+                <div className="text-xs">Spotify Premium</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-2 text-center">
+                <div className="text-lg mb-1">🍕</div>
+                <div className="text-xs">Food Vouchers</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-2 text-center">
+                <div className="text-lg mb-1">💰</div>
+                <div className="text-xs">PayPal Cash</div>
+              </div>
+            </div>
+            <div className="text-center mt-3 text-xs opacity-75">
+              Random rewards - from daily treats to epic prizes!
+            </div>
+          </div>
+        </div>
+
         <div className="w-full max-w-sm space-y-4 animate-fade-in-up">
           {challenges.map((challenge, index) => (
             <button
@@ -41,15 +71,15 @@ export default function WelcomeScreen({ challenges, onChallengeSelect }: Welcome
           ))}
         </div>
         
-        <div className="mt-12 flex items-center space-x-4 opacity-80">
+        <div className="mt-8 flex items-center space-x-4 opacity-80">
           <div className="flex items-center space-x-2">
             <span className="text-2xl">⚡</span>
-            <span className="text-sm">Quick & Fun</span>
+            <span className="text-sm">2-5 mins each</span>
           </div>
           <div className="w-1 h-1 bg-white rounded-full"></div>
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">🎁</span>
-            <span className="text-sm">Win Rewards</span>
+            <span className="text-2xl">🎲</span>
+            <span className="text-sm">Random rewards</span>
           </div>
         </div>
       </div>

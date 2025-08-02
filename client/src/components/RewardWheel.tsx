@@ -16,7 +16,7 @@ export default function RewardWheel({ submissionId, onFinish }: RewardWheelProps
     enabled: !!submissionId,
   });
 
-  const reward = submissionData?.reward;
+  const reward = (submissionData as any)?.reward;
 
   const handleSpin = () => {
     if (isSpinning) return;
@@ -131,9 +131,9 @@ export default function RewardWheel({ submissionId, onFinish }: RewardWheelProps
             <div className="text-4xl mb-2">🎉</div>
             <h3 className="text-xl font-bold mb-2">You Won!</h3>
             <div className="text-lg font-semibold mb-2" data-testid="text-reward-value">
-              {reward?.rewardValue || '$5 Starbucks Gift Card'}
+              {reward?.rewardValue || '£3 Costa Coffee'}
             </div>
-            <p className="text-sm opacity-90 mb-4">Check your email for your reward code!</p>
+            <p className="text-sm opacity-90 mb-4">Your reward code will be sent to your email!</p>
             <button 
               onClick={onFinish}
               data-testid="button-claim-reward"
