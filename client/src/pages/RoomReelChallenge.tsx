@@ -158,7 +158,7 @@ export default function RoomReelChallenge() {
           totalSteps={selectedPrompts.length}
           pointsEarned={selectedChallenge?.pointsPerStep || 25}
           totalPoints={totalPoints}
-          onContinue={handleContinueRecording}
+          onContinue={() => setCurrentScreen('review')}
           onRetake={() => setCurrentScreen('camera')}
         />
       );
