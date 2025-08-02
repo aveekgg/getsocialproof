@@ -1,4 +1,4 @@
-import { Challenge } from "@shared/schema";
+import { Challenge } from "@/types";
 
 interface ChallengeGalleryProps {
   challenges: Challenge[];

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Challenge, VideoClip, ChallengePrompt } from "@shared/schema";
+import { Challenge, VideoClip, ChallengePrompt } from "@/types";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 

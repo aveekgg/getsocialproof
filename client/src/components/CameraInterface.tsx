@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Challenge, VideoClip, ChallengePrompt } from "@shared/schema";
+import { Challenge, VideoClip, ChallengePrompt } from "@/types";
 import { useCamera } from "@/hooks/useCamera";
 import { useMediaRecorder } from "@/hooks/useMediaRecorder";
 import SketchOverlay from "./SketchOverlay";

@@ -8,7 +8,7 @@ import RewardWheel from "@/components/RewardWheel";
 import SuccessScreen from "@/components/SuccessScreen";
 import Login from "@/components/Login";
 import Navbar from "@/components/Navbar";
-import type { Challenge, VideoClip, ChallengePrompt } from "@shared/schema";
+import type { Challenge, VideoClip, ChallengePrompt } from "@/types";
 
 type Screen = 'login' | 'gallery' | 'camera' | 'complete' | 'review' | 'reward' | 'success';
 

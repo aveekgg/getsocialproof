@@ -1,4 +1,4 @@
-import { Challenge, ChallengePrompt } from "@shared/schema";
+import { Challenge, ChallengePrompt } from "@/types";
 
 interface RecordingCompleteProps {
   challenge: Challenge;
